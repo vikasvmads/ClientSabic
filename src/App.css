@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+
+.table-responsive {
+    max-height:700px;
+}
+
+.formcontrol {
+  width:  200px ;
+  height: 50px;
+}
