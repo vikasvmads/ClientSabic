@@ -17,6 +17,7 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 import PrivateRoute from "./components/private-route/PrivateRoute"
 import Login from "./components/login"
 import Hello from "./components/hello"
+import index from "./components/index"
 
 import store from "./stroe"
 
@@ -39,9 +40,10 @@ function App() {
       <Router>
         <Route exact path="/login" component={Login} />
         <Route exact path="/Data" component={Data} />
+        <Route exact path="/Index" component={index} />
+
         <Route exact path="/" component={Hello} />Data
         <Switch>
-
         </Switch>
       </Router>
     </Provider>
