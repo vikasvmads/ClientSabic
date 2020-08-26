@@ -886,6 +886,87 @@ section {
     width: 160px;
 }
 
+
+.js-select2 {
+  background-color:#2814e4;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+.js-select2 option {
+  display: none;
+  position: absolute;
+  background-color: #9411eb;
+  min-width: 160px;
+/* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+  z-index: 1;
+}
+
+.custom-select {
+  position: relative;
+  font-family: Arial;
+  width:200px;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+
+.select-selected {
+  background-color: DodgerBlue;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #fff transparent;
+  top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  color: #ffffff;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: DodgerBlue;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+
 .select2-container {
     display: block;
     max-width: 100% !important;
@@ -1399,8 +1480,12 @@ section {
 
 .account-wrap {
     position: relative;
+    font-size: 10px;
 }
 
+.btn.btn-dark.btn-md{
+     font-size: 14px;
+}
 .account-item {
     cursor: pointer;
 }
@@ -2659,6 +2744,10 @@ section {
     align-items: center;
     position: relative;
     z-index: 3;
+    width:120px;
+    height: 140px;
+    margin-left:30px
+    
 }
 
 .header__navbar ul {
@@ -2848,6 +2937,9 @@ section {
     .header__tool .account-item > .content {
         display: none;
     }
+}
+.list-unstyled{
+    margin-top: 40px;
 }
 
 .bot-line {

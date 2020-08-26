@@ -1,12 +1,21 @@
 import React from "react";
+import { connect } from "react-redux";
+import { logoutUser } from "../actions/authActions";
 import '../App.css';
 import Table from './table';
 import Statics from './statics';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class index extends React.Component {
     constructor() {
         super();
     }
+
+    onLogoutClick = e => {
+        e.preventDefault();
+        this.props.logoutUser();
+    };
+
     render() {
         return (
 
@@ -15,11 +24,10 @@ class index extends React.Component {
                 <header className="header-desktop3 d-none d-lg-block">
                     <div className="section__content section__content--p35">
                         <div className="header3-wrap">
-
                             <div className="header__logo">
-                                <a href="#">
-                                    <img src="images/icon/logo-white.png" alt="CoolAdmin" />
-                                </a>
+                                <img src=
+                                    {require('../images/Soothsayer-logo.png')}
+                                    alt="CoolAdmin" />
                             </div>
                             <div className="header__navbar">
                                 <ul className="list-unstyled">
@@ -113,7 +121,6 @@ class index extends React.Component {
                             </div>
                             <div className="header__tool">
                                 <div className="header-button-item has-noti js-item-menu">
-                                    <i className="zmdi zmdi-notifications"></i>
                                     <div className="notifi-dropdown notifi-dropdown--no-bor js-dropdown">
                                         <div className="notifi__title">
                                             <p>You have 3 Notifications</p>
@@ -180,55 +187,17 @@ class index extends React.Component {
                                                 <a href="#">
                                                     <i className="zmdi zmdi-email"></i>Email</a>
                                             </div>
-                                            <div className="account-dropdown__item">
-                                                <a href="#">
-                                                    <i className="zmdi zmdi-notifications"></i>Notifications</a>
-                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                                 <div className="account-wrap">
-                                    <div className="account-item account-item--style2 clearfix js-item-menu">
-                                        <div className="image">
-                                            <img src="images/icon/avatar-01.jpg" alt="John Doe" />
-                                        </div>
-                                        <div className="content">
-                                            <a className="js-acc-btn" href="#">john doe</a>
-                                        </div>
-                                        <div className="account-dropdown js-dropdown">
-                                            <div className="info clearfix">
-                                                <div className="image">
-                                                    <a href="#">
-                                                        <img src="images/icon/avatar-01.jpg" alt="John Doe" />
-                                                    </a>
-                                                </div>
-                                                <div className="content">
-                                                    <h5 className="name">
-                                                        <a href="#">john doe</a>
-                                                    </h5>
-                                                    <span className="email">johndoe@example.com</span>
-                                                </div>
-                                            </div>
-                                            <div className="account-dropdown__body">
-                                                <div className="account-dropdown__item">
-                                                    <a href="#">
-                                                        <i className="zmdi zmdi-account"></i>Account</a>
-                                                </div>
-                                                <div className="account-dropdown__item">
-                                                    <a href="#">
-                                                        <i className="zmdi zmdi-settings"></i>Setting</a>
-                                                </div>
-                                                <div className="account-dropdown__item">
-                                                    <a href="#">
-                                                        <i className="zmdi zmdi-money-box"></i>Billing</a>
-                                                </div>
-                                            </div>
-                                            <div className="account-dropdown__footer">
-                                                <a href="#">
-                                                    <i className="zmdi zmdi-power"></i>Logout</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <button
+                                        onClick={this.onLogoutClick}
+                                        className="btn btn-dark btn-md"
+                                    >
+                                        Logout
+                                                 </button>
                                 </div>
                             </div>
                         </div>
@@ -351,7 +320,6 @@ class index extends React.Component {
                 <div className="sub-header-mobile-2 d-block d-lg-none">
                     <div className="header__tool">
                         <div className="header-button-item has-noti js-item-menu">
-                            <i className="zmdi zmdi-notifications"></i>
                             <div className="notifi-dropdown notifi-dropdown--no-bor js-dropdown">
                                 <div className="notifi__title">
                                     <p>You have 3 Notifications</p>
@@ -418,10 +386,7 @@ class index extends React.Component {
                                         <a href="#">
                                             <i className="zmdi zmdi-email"></i>Email</a>
                                     </div>
-                                    <div className="account-dropdown__item">
-                                        <a href="#">
-                                            <i className="zmdi zmdi-notifications"></i>Notifications</a>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -521,4 +486,11 @@ class index extends React.Component {
     }
 }
 
-export default index;
+
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+export default connect(
+    mapStateToProps,
+    { logoutUser }
+)(index);
