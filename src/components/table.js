@@ -4,16 +4,16 @@ import { connect } from "react-redux";
 import { logoutUser } from "../actions/authActions";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import Button from 'react-bootstrap/Button';
 import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx'; import 'bootstrap/dist/css/bootstrap.min.css';
+import * as XLSX from 'xlsx';
 import '../../node_modules/font-awesome/css/font-awesome.min.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
-//import { fasignout } from '@fortawesome/free-solid-svg-icons'
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import TextField from '@material-ui/core/TextField';
+import CheckIcon from '@material-ui/icons/Check';
 
 
-class Table extends React.Component {
+class TableS extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,21 +24,51 @@ class Table extends React.Component {
             currentPage: 1,
             export: "",
             people: [
-                { name: "Keanu Reeves", profession: "Actor" },
-                { name: "Lionel Messi", profession: "Football Player" },
-                { name: "Cristiano Ronaldo", profession: "Football Player" },
-                { name: "Jack Nicklaus", profession: "Golf Player" },
-            ]
+                { name: "Keanu Reeves", profession: "Actor", number: "123456" },
+                { name: "Lionel Messi", profession: "Football Player", number: "123456" },
+                { name: "Cristiano Ronaldo", profession: "Football Player", number: "123456" },
+                { name: "Jack Nicklaus", profession: "Golf Player", number: "123456" },
+            ],
+            editx: -1
         }
         this.exportPDF = this.exportPDF.bind(this);
         this.ExportCSV = this.ExportCSV.bind(this);
-
     }
     handleSearch = (e) => {
-        console.log(e.target.value)
         this.setState({
             searchTearm: e.target.value
         })
+        console.log(this.state.searchTearm)
+
+    }
+
+    handleEdit = (i) => {
+        console.log("editing")
+        console.log(i);
+    }
+
+    handleDelte = (i) => {
+        console.log(i);
+        this.setState({
+            people: this.state.people.filter((x, j) =>
+                j !== i
+            )
+        })
+    }
+
+    startEditing = (i) => {
+        this.setState({ editx: i })
+    }
+
+    stopEditing = () => {
+        this.setState({ editx: -1 })
+    }
+    handleChange = (e, Name, i) => {
+        console.log(e);
+        const { value } = e.target;
+        this.setState(state => ({
+            people: state.people.map((row, j) => (j === i ? { ...row, [Name]: value } : row))
+        }))
     }
 
     onChange = (e) => {
@@ -114,8 +144,8 @@ class Table extends React.Component {
                                     </div>
                                 </div>
                                 <div className="table-data__tool-right">
-                                    <button className="au-btn au-btn-icon au-btn--green au-btn--small">
-                                        <i className="zmdi zmdi-plus"></i>add item</button>
+                                    {/* <button className="au-btn au-btn-icon au-btn--green au-btn--small">
+                                        <i className="zmdi zmdi-plus"></i>add item</button> */}
                                     <div className="rs-select2--dark rs-select2--sm rs-select2--dark2">
                                         <select className="custom-select" onChange={this.onChange} name="type">
                                             <option selected="selected">Export</option>
@@ -130,128 +160,140 @@ class Table extends React.Component {
                                 <table className="table table-data2">
                                     <thead>
                                         <tr>
-                                            <th>
-                                                <label className="au-checkbox">
-                                                    <input type="checkbox" />
-                                                    <span className="au-checkmark"></span>
-                                                </label>
-                                            </th>
                                             <th>name</th>
                                             <th>email</th>
-                                            <th>description</th>
-                                            {/* <th>date</th> */}
-                                            {/* <th>status</th> */}
-                                            {/* <th>price</th> */}
+                                            <th>Number</th>
                                             <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr className="tr-shadow">
-                                            <td>
-                                                <label className="au-checkbox">
-                                                    <input type="checkbox" />
-                                                    <span className="au-checkmark"></span>
-                                                </label>
-                                            </td>
-                                            <td>Lori Lynch</td>
-                                            <td>
-                                                <span className="block-email">lori@example.com</span>
-                                            </td>
-                                            <td className="desc">Samsung S8 Black</td>
-                                            {/* <td>2018-09-27 02:12</td> */}
-                                            {/* <td>
-                                                <span className="status--process">Processed</span>
-                                            </td>
-                                            <td>$679.00</td> */}
-                                            <td>
-                                                <div className="table-data-feature">
-                                                    <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                        {/* <i className="zmdi zmdi-mail-send"></i> */}
-                                                        <FontAwesomeIcon icon={faEdit} />
-                                                    </button>
-                                                    <div className="table-data-feature">
-                                                        <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr className="spacer"></tr>
-                                        <tr className="tr-shadow">
-                                            <td>
-                                                <label className="au-checkbox">
-                                                    {/* <input type="checkbox"> */}
-                                                    <span className="au-checkmark"></span>
-                                                </label>
-                                            </td>
-                                            <td>Lori Lynch</td>
-                                            <td>
-                                                <span className="block-email">john@example.com</span>
-                                            </td>
-                                            <td className="desc">iPhone X 64Gb Grey</td>
-                                            <div className="table-data-feature">
-                                                <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                    {/* <i className="zmdi zmdi-mail-send"></i> */}
-                                                    <FontAwesomeIcon icon={faEdit} />
-                                                </button>
-                                            </div>
-                                            <td>
-                                                <div className="table-data-feature">
-                                                    <span class="glyphicon glyphicon-edit"></span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr className="spacer"></tr>
-                                        <tr className="tr-shadow">
-                                            <td>
-                                                <label className="au-checkbox">
-                                                    <input type="checkbox" />
-                                                    <span className="au-checkmark"></span>
-                                                </label>
-                                            </td>
-                                            <td>Lori Lynch</td>
-                                            <td>
-                                                <span className="block-email">lyn@example.com</span>
-                                            </td>
-                                            <td className="desc">iPhone X 256Gb Black</td>
-                                            <div className="table-data-feature">
-                                                <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                    {/* <i className="zmdi zmdi-mail-send"></i> */}
-                                                    <FontAwesomeIcon icon={faEdit} />
-                                                </button>
-                                            </div>
-                                            <td>
-                                                <div className="table-data-feature">
+                                        {
 
+                                            this.state.searchTearm ? this.state.people
+                                                .filter(//taking data
+                                                    data =>
+                                                        `${data.name} ${data.profession} ${data.number} `
+                                                            .toUpperCase()
+                                                            .indexOf(this.state.searchTearm.toUpperCase()) >= 0)
+                                                .map((data, index) => {
+                                                    const currentlyEdit = (this.state.editx === index) ? true : false;
+                                                    return (
+                                                        currentlyEdit ?
+                                                            <tr className="tr-shadow">
+                                                                <td>
+                                                                    <TextField onChange={e => this.handleChange(e, "name", index)} name="name" value={data.name} />
+                                                                </td>
+                                                                <td>
+                                                                    <span className="block-email">
+                                                                        <TextField onChange={e => this.handleChange(e, "profession", index)} name="profession" value={data.profession} />
+                                                                    </span>
+                                                                </td>
+                                                                <td className="desc">
+                                                                    <TextField onChange={e => this.handleChange(e, "number", index)} name="number" value={data.number} />
+                                                                </td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        {currentlyEdit ?
+                                                                            <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                                                <CheckIcon onClick={() => this.stopEditing(index)} />
+                                                                            </button> :
+                                                                            <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                                                <EditIcon onClick={() => this.startEditing(index)} />
+                                                                            </button>}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        <button className="item" onClick={() => this.handleDelte(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <DeleteIcon />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            : <tr className="tr-shadow">
+                                                                <td>{data.name}</td>
+                                                                <td>
+                                                                    <span className="block-email">{data.profession}</span>
+                                                                </td>
+                                                                <td className="desc">{data.number}</td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        <button className="item" onClick={() => this.startEditing(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <EditIcon />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        <button className="item" onClick={() => this.handleDelte(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <DeleteIcon />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
 
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr className="spacer"></tr>
-                                        <tr className="tr-shadow">
-                                            <td>
-                                                <label className="au-checkbox">
-                                                    <input type="checkbox" />
-                                                    <span className="au-checkmark"></span>
-                                                </label>
-                                            </td>
-                                            <td>Lori Lynch</td>
-                                            <td>
-                                                <span className="block-email">doe@example.com</span>
-                                            </td>
-                                            <td className="desc">Camera C430W 4k</td>
-                                            <div className="table-data-feature">
-                                                <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                    {/* <i className="zmdi zmdi-mail-send"></i> */}
-                                                    <FontAwesomeIcon icon={faEdit} />
-                                                </button>
-                                            </div>
-                                            <td>
-                                                <div className="table-data-feature">
+                                                    )
+                                                })
+                                                : this.state.people.map((data, index) => {
+                                                    const currentlyEdit = (this.state.editx === index) ? true : false;
+                                                    return (
+                                                        currentlyEdit ?
+                                                            <tr className="tr-shadow">
+                                                                <td>
+                                                                    <TextField onChange={e => this.handleChange(e, "name", index)} name="name" value={data.name} />
+                                                                </td>
+                                                                <td>
+                                                                    <span className="block-email">
+                                                                        <TextField onChange={e => this.handleChange(e, "profession", index)} name="profession" value={data.profession} />
+                                                                    </span>
+                                                                </td>
+                                                                <td className="desc">
+                                                                    <TextField onChange={e => this.handleChange(e, "number", index)} name="number" value={data.number} />
+                                                                </td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        {currentlyEdit ?
+                                                                            <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                                                <CheckIcon onClick={() => this.stopEditing(index)} />
+                                                                            </button> :
+                                                                            <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                                                <EditIcon onClick={() => this.startEditing(index)} />
+                                                                            </button>}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        <button className="item" onClick={() => this.handleDelte(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <DeleteIcon />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            : <tr className="tr-shadow">
+                                                                <td>{data.name}</td>
+                                                                <td>
+                                                                    <span className="block-email">{data.profession}</span>
+                                                                </td>
+                                                                <td className="desc">{data.number}</td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        <button className="item" onClick={() => this.startEditing(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <EditIcon />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="table-data-feature">
+                                                                        <button className="item" onClick={() => this.handleDelte(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <DeleteIcon />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
 
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                    )
+                                                })}
+
                                     </tbody>
                                 </table>
                             </div>
@@ -269,4 +311,4 @@ const mapStateToProps = state => ({
 export default connect(
     mapStateToProps,
     { logoutUser }
-)(Table);
+)(TableS);

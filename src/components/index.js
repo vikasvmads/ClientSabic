@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { logoutUser } from "../actions/authActions";
 import '../App.css';
-import Table from './table';
+import TableS from './table';
 import Statics from './statics';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -468,7 +468,7 @@ class index extends React.Component {
 
                     <Statics />
 
-                    <Table />
+                    <TableS />
                     <section className="p-t-60 p-b-20">
                         <div className="container">
                             <div className="row">
