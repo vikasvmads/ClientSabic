@@ -38,8 +38,6 @@ class TableS extends React.Component {
         this.setState({
             searchTerm: e.target.value
         })
-        console.log(this.state.searchTerm)
-
     }
 
     handleEdit = (i) => {
@@ -48,7 +46,6 @@ class TableS extends React.Component {
     }
 
     handleDelete = (i) => {
-        console.log(i);
         this.setState({
             people: this.state.people.filter((x, j) =>
                 j !== i
@@ -70,7 +67,6 @@ class TableS extends React.Component {
             people: state.people.map((row, j) => (j === i ? { ...row, [Name]: value } : row))
         }))
     }
-
     onChange = (e) => {
         if (e.target.value === "PDF") {
             this.exportPDF();
@@ -78,6 +74,7 @@ class TableS extends React.Component {
             this.ExportCSV();
         }
     }
+
     exportPDF = () => {
         const unit = "pt";
         const size = "A4"; // Use A1, A2, A3 or A4
@@ -87,38 +84,29 @@ class TableS extends React.Component {
         doc.setFontSize(15);
         const title = "My Awesome Report";
         const headers = [["NAME", "email", "description"]];
-
         const data = this.state.people.map(elt => [elt.name, elt.profession, elt.profession]);
-
         let content = {
             startY: 50,
             head: headers,
             body: data
         };
-
         doc.text(title, marginLeft, 40);
         doc.autoTable(content);
         doc.save("report.pdf")
     }
     ExportCSV = () => {
-
         const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
         const fileExtension = '.xlsx';
-
         const ws = XLSX.utils.json_to_sheet(this.state.people);
         const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         const data = new Blob([excelBuffer], { type: fileType });
         FileSaver.saveAs(data, "Excel" + fileExtension);
-
     }
     onLogoutClick = e => {
         e.preventDefault();
         this.props.logoutUser();
     };
-
-
-
     render() {
         return (
             <section className="p-t-20">
@@ -161,7 +149,7 @@ class TableS extends React.Component {
                                     <tbody>
                                         {
                                             this.state.people
-                                                .filter(//taking data
+                                                .filter(
                                                     data =>
                                                         `${data.name} ${data.profession} ${data.number} `
                                                             .toUpperCase()
@@ -169,60 +157,49 @@ class TableS extends React.Component {
                                                 .map((data, index) => {
                                                     const currentlyEdit = (this.state.editx === index) ? true : false;
                                                     return (
-                                                        currentlyEdit ?
-                                                            <tr className="tr-shadow">
-                                                                <td>
+                                                        <tr className="tr-shadow">
+                                                            <td>
+                                                                {currentlyEdit ?
                                                                     <TextField onChange={e => this.handleChange(e, "name", index)} name="name" value={data.name} />
-                                                                </td>
-                                                                <td>
-                                                                    <span className="block-email">
+                                                                    :
+                                                                    data.name
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                <span className="block-email">
+                                                                    {currentlyEdit ?
                                                                         <TextField onChange={e => this.handleChange(e, "profession", index)} name="profession" value={data.profession} />
-                                                                    </span>
-                                                                </td>
-                                                                <td className="desc">
+                                                                        :
+                                                                        <span className="block-email">{data.profession}</span>
+                                                                    }
+                                                                </span>
+                                                            </td>
+                                                            <td className="desc">
+                                                                {currentlyEdit ?
                                                                     <TextField onChange={e => this.handleChange(e, "number", index)} name="number" value={data.number} />
-                                                                </td>
-                                                                <td>
-                                                                    <div className="table-data-feature">
-                                                                        {currentlyEdit ?
-                                                                            <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                                                <CheckIcon onClick={() => this.stopEditing(index)} />
-                                                                            </button> :
-                                                                            <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                                                <EditIcon onClick={() => this.startEditing(index)} />
-                                                                            </button>}
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="table-data-feature">
-                                                                        <button className="item" onClick={() => this.handleDelete(index)} data-toggle="tooltip" data-placement="top" title="Send">
-                                                                            <DeleteIcon />
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            : <tr className="tr-shadow">
-                                                                <td>{data.name}</td>
-                                                                <td>
-                                                                    <span className="block-email">{data.profession}</span>
-                                                                </td>
-                                                                <td className="desc">{data.number}</td>
-                                                                <td>
-                                                                    <div className="table-data-feature">
-                                                                        <button className="item" onClick={() => this.startEditing(index)} data-toggle="tooltip" data-placement="top" title="Send">
-                                                                            <EditIcon />
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="table-data-feature">
-                                                                        <button className="item" onClick={() => this.handleDelete(index)} data-toggle="tooltip" data-placement="top" title="Send">
-                                                                            <DeleteIcon />
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-
+                                                                    :
+                                                                    data.number
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                <div className="table-data-feature">
+                                                                    {currentlyEdit ?
+                                                                        <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <CheckIcon onClick={() => this.stopEditing(index)} />
+                                                                        </button> :
+                                                                        <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                                            <EditIcon onClick={() => this.startEditing(index)} />
+                                                                        </button>}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div className="table-data-feature">
+                                                                    <button className="item" onClick={() => this.handleDelete(index)} data-toggle="tooltip" data-placement="top" title="Send">
+                                                                        <DeleteIcon />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     )
                                                 })
                                         }
