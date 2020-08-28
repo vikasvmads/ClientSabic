@@ -5,7 +5,7 @@ import './images/icons/favicon.ico';
 import './vendor/animate/animate.css';
 import './vendor/select2/select2.min.css';
 import './vendor/perfect-scrollbar/perfect-scrollbar.css';
-import Pagination from './Pagignation'
+import Paginations from './Pagignation'
 import './css/util.css';
 import './css/main.css';
 import './js/main.js';
@@ -102,7 +102,7 @@ class Data extends React.Component {
                                             : ""
                                     }
                                 </table>{
-                                    this.state.searchTerm ? "" : <Pagination postPerPages={this.state.postPerPages} totalPosts={this.state.data.length} paginate={this.paginate} />}
+                                    this.state.searchTerm ? "" : <Paginations postPerPages={this.state.postPerPages} totalPosts={this.state.data.length} paginate={this.paginate} />}
                             </div>
                         </div>
                     </div>

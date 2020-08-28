@@ -1,6 +1,7 @@
 import React from 'react';
+import Pagination from '@material-ui/lab/Pagination';
 
-const Pagination = ({ postPerPages, totalPosts, paginate }) => {
+const Paginations = ({ postPerPages, totalPosts, paginate }) => {
     const pageNumbers = [];
 
     for (let i = 1; i <= Math.ceil(totalPosts / postPerPages); i++) {
@@ -21,4 +22,4 @@ const Pagination = ({ postPerPages, totalPosts, paginate }) => {
     );
 };
 
-export default Pagination;
+export default Paginations;

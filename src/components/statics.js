@@ -15,7 +15,6 @@ class Statics extends React.Component {
                         <div className="row">
                             <div className="col-md-12">
                                 <h1 className="title-4">Welcome back
-                                <span>John!</span>
                                 </h1>
                                 <hr className="line-seprate" />
                             </div>
@@ -64,7 +63,7 @@ class Statics extends React.Component {
                         </div>
                     </div>
                 </section>
-                <section className="statistic-chart">
+                {/* <section className="statistic-chart">
                     <div className="container">
                         <div className="row">
                             <div className="col-md-12">
@@ -138,7 +137,7 @@ class Statics extends React.Component {
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> */}
             </div>
         )
     }
