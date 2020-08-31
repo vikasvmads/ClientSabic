@@ -26,7 +26,7 @@ class index extends React.Component {
                         <div className="header3-wrap">
                             <div className="header__logo">
                                 <img src=
-                                    {require('../images/Soothsayer-logo.png')}
+                                    {require('../images/SABIC-LOGO_tcm1010-14323.svg')}
                                     alt="CoolAdmin" />
                             </div>
                             <div className="header__navbar">
