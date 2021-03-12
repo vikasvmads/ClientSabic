@@ -1,25 +1,30 @@
-import React from 'react';
-import { HashRouter, BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './images/icons/favicon.ico';
-import './vendor/animate/animate.css';
-import './vendor/select2/select2.min.css';
-import './vendor/perfect-scrollbar/perfect-scrollbar.css';
-import './css/util.css';
-import './css/main.css';
-import './js/main.js';
+import React from "react";
+import {
+  HashRouter,
+  BrowserRouter as Router,
+  Route,
+  Switch,
+} from "react-router-dom";
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./images/icons/favicon.ico";
+import "./vendor/animate/animate.css";
+import "./vendor/select2/select2.min.css";
+import "./vendor/perfect-scrollbar/perfect-scrollbar.css";
+import "./css/util.css";
+import "./css/main.css";
+import "./js/main.js";
 import Data from "./data";
 import { Provider } from "react-redux";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
-import PrivateRoute from "./components/private-route/PrivateRoute"
-import Login from "./components/login"
-import Hello from "./components/hello"
-import index from "./components/index"
-
-import store from "./stroe"
+import PrivateRoute from "./components/private-route/PrivateRoute";
+import Login from "./components/login";
+import Hello from "./components/hello";
+import index from "./components/index";
+import Charts from "./components/Charts";
+import store from "./stroe";
 
 var Tesseract = window.Tesseract;
 if (localStorage.jwtToken) {
@@ -41,10 +46,8 @@ function App() {
         <Route exact path="/login" component={Login} />
         <Route exact path="/Data" component={Data} />
         <Route exact path="/Index" component={index} />
-
-        <Route exact path="/" component={Hello} />Data
-        <Switch>
-        </Switch>
+        <Route exact path="/charts" component={Charts} />
+        <Route exact path="/" component={Hello} />
       </Router>
     </Provider>
   );

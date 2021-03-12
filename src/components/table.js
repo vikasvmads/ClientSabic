@@ -1,523 +1,391 @@
-import React from 'react';
-import '../App.css';
+import React from "react";
+import "../App.css";
 import { connect } from "react-redux";
 import { logoutUser } from "../actions/authActions";
 import axios from "axios";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
-import '../../node_modules/font-awesome/css/font-awesome.min.css';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import TextField from '@material-ui/core/TextField';
-import CheckIcon from '@material-ui/icons/Check';
-import Chart from './Chart'
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import "../../node_modules/font-awesome/css/font-awesome.min.css";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import TextField from "@material-ui/core/TextField";
+import CheckIcon from "@material-ui/icons/Check";
+import Chart from "./Chart";
+import { people } from "../peopleData";
 
 class TableS extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: "",
-            searchTerm: "",
-            loading: "",
-            postPerPage: 5,
-            currentPage: 1,
-            export: "",
-            people: [{ "Material_Number": 7069133, "Material_Description": "pen sabic", "Unspsc_MaterialService_Group": "80141611", "Unspsc_Desc": "Gift person services", "Sum_of_PO_Converted_Qty": 386421, "Sum_of_PO_Line_Total_SAR": 8780200.510, "col2018_Average_Price": 22.722, "Sum_of_PO_Converted_Qty": 174742.000, "Sum_of_PO_Line_Total_SAR": 5467413.520, "col2019_Average_Price": 31.288, "Sum_of_PO_Converted_Qty": 53566.000, "Sum_of_PO_Line_Total_SAR": 470935.700, "col2020_Average_Price": 8.792, "Total_Sum_of_PO_Converted_Qty": 614729.000, "Total_Sum_of_PO_Line_Total_SAR": 14718549.730, "Overall_Average_Price": 23.943, "Cost_Savings_for_2019": -1496951.776, "cost_saving_for_2020": 1205063.617 },
-            { "Material_Number": 6000580, "Material_Description": "PC-BAS:COLOR WHITETRADE NAME CAUSTIC SO", "Unspsc_MaterialService_Group": "DM110204", "Unspsc_Desc": "BASES", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 20, "Sum_of_PO_Line_Total_SAR": 23000, "col2019_Average_Price": 1150, "Sum_of_PO_Converted_Qty": 4000, "Sum_of_PO_Line_Total_SAR": 3748000, "col2020_Average_Price": 937, "Total_Sum_of_PO_Converted_Qty": 4020, "Total_Sum_of_PO_Line_Total_SAR": 3771000, "Overall_Average_Price": 938.059701492537, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 852000 },
-            { "Material_Number": 6001628, "Material_Description": "CA-CHM:TRD NAME CATALYST S-21PHYS FRM S", "Unspsc_MaterialService_Group": "DM010119", "Unspsc_Desc": "chem catS NOT SPEC", "Sum_of_PO_Converted_Qty": 270000, "Sum_of_PO_Line_Total_SAR": 5581100.000, "col2018_Average_Price": 20.671, "Sum_of_PO_Converted_Qty": 186000.000, "Sum_of_PO_Line_Total_SAR": 3710700.000, "col2019_Average_Price": 19.950, "Sum_of_PO_Converted_Qty": 164000.000, "Sum_of_PO_Line_Total_SAR": 2788000.000, "col2020_Average_Price": 17.000, "Total_Sum_of_PO_Converted_Qty": 620000.000, "Total_Sum_of_PO_Line_Total_SAR": 12079800.000, "Overall_Average_Price": 19.484, "Cost_Savings_for_2019": 134057.778, "cost_saving_for_2020": 483800.000 },
-            { "Material_Number": 7077439, "Material_Description": "TRAY:TYP SERVINGSZ BIG", "Unspsc_MaterialService_Group": "41122808", "Unspsc_Desc": "General purpose tray", "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 330.000, "col2018_Average_Price": 165.000, "Sum_of_PO_Converted_Qty": 604.000, "Sum_of_PO_Line_Total_SAR": 99360.000, "col2019_Average_Price": 164.503, "Sum_of_PO_Converted_Qty": 550.000, "Sum_of_PO_Line_Total_SAR": 11550.000, "col2020_Average_Price": 21.000, "Total_Sum_of_PO_Converted_Qty": 1156.000, "Total_Sum_of_PO_Line_Total_SAR": 111240.000, "Overall_Average_Price": 96.228, "Cost_Savings_for_2019": 300.000, "cost_saving_for_2020": 78926.821 },
-            { "Material_Number": 823080, "Material_Description": "THRMCUPLK-MINERAL INSULATED0-1200Â°C", "Unspsc_MaterialService_Group": "41112206", "Unspsc_Desc": "Thermocouples", "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 27416.000, "col2018_Average_Price": 6854.000, "Sum_of_PO_Converted_Qty": 46.000, "Sum_of_PO_Line_Total_SAR": 388312.000, "col2019_Average_Price": 8441.565, "Sum_of_PO_Converted_Qty": 32.000, "Sum_of_PO_Line_Total_SAR": 226368.000, "col2020_Average_Price": 7074.000, "Total_Sum_of_PO_Converted_Qty": 82.000, "Total_Sum_of_PO_Line_Total_SAR": 642096.000, "Overall_Average_Price": 7830.439, "Cost_Savings_for_2019": -73028.000, "cost_saving_for_2020": 43762.087 },
-            { "Material_Number": 1546930, "Material_Description": "BAG:TYP ZIPLOCKSIZE WD 6 IN X LG 10 IN", "Unspsc_MaterialService_Group": "24111500", "Unspsc_Desc": "Bags", "Sum_of_PO_Converted_Qty": 20, "Sum_of_PO_Line_Total_SAR": 79000.000, "col2018_Average_Price": 3950.000, "Sum_of_PO_Converted_Qty": 10.000, "Sum_of_PO_Line_Total_SAR": 39500.000, "col2019_Average_Price": 3950.000, "Sum_of_PO_Converted_Qty": 8.000, "Sum_of_PO_Line_Total_SAR": 1480.000, "col2020_Average_Price": 185.000, "Total_Sum_of_PO_Converted_Qty": 38.000, "Total_Sum_of_PO_Line_Total_SAR": 119980.000, "Overall_Average_Price": 3157.368, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 30120.000 },
-            { "Material_Number": 7104142, "Material_Description": "CONDITIONERAIR:RT 19000BTU", "Unspsc_MaterialService_Group": "40100000", "Unspsc_Desc": "Heating and ventilat", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 41000, "col2019_Average_Price": 20500, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 72500, "col2020_Average_Price": 14500, "Total_Sum_of_PO_Converted_Qty": 7, "Total_Sum_of_PO_Line_Total_SAR": 113500, "Overall_Average_Price": 16214.2857142857, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 30000 },
-            { "Material_Number": 982567, "Material_Description": "GREASEINDUSTRIAL:TYP BEARINGTEMP RT -4", "Unspsc_MaterialService_Group": "15121902", "Unspsc_Desc": "Grease", "Sum_of_PO_Converted_Qty": 36, "Sum_of_PO_Line_Total_SAR": 576972.000, "col2018_Average_Price": 16027.000, "Sum_of_PO_Converted_Qty": 25.000, "Sum_of_PO_Line_Total_SAR": 353942.000, "col2019_Average_Price": 14157.680, "Sum_of_PO_Converted_Qty": 13.000, "Sum_of_PO_Line_Total_SAR": 157602.000, "col2020_Average_Price": 12123.231, "Total_Sum_of_PO_Converted_Qty": 74.000, "Total_Sum_of_PO_Line_Total_SAR": 1088516.000, "Overall_Average_Price": 14709.676, "Cost_Savings_for_2019": 46733.000, "cost_saving_for_2020": 26447.840 },
-            { "Material_Number": 359320, "Material_Description": "HOSE-WTR3500MMMETAL10BARD:1002612786", "Unspsc_MaterialService_Group": "40142000", "Unspsc_Desc": "Hoses", "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 30000.000, "col2018_Average_Price": 10000.000, "Sum_of_PO_Converted_Qty": 6.000, "Sum_of_PO_Line_Total_SAR": 60000.000, "col2019_Average_Price": 10000.000, "Sum_of_PO_Converted_Qty": 5.000, "Sum_of_PO_Line_Total_SAR": 27950.000, "col2020_Average_Price": 5590.000, "Total_Sum_of_PO_Converted_Qty": 14.000, "Total_Sum_of_PO_Line_Total_SAR": 117950.000, "Overall_Average_Price": 8425.000, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 22050.000 },
-            { "Material_Number": 702325, "Material_Description": "GUD:TYP BUSHINGAPL COMPRESSORP/N:41809", "Unspsc_MaterialService_Group": "23153000", "Unspsc_Desc": "Hold &posn &guid dev", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 7984, "col2019_Average_Price": 3992, "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 25696, "col2020_Average_Price": 2336, "Total_Sum_of_PO_Converted_Qty": 13, "Total_Sum_of_PO_Line_Total_SAR": 33680, "Overall_Average_Price": 2590.76923076923, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 18216 },
-            { "Material_Number": 313518, "Material_Description": "PLATEMETAL:", "Unspsc_MaterialService_Group": "30102504", "Unspsc_Desc": "Steel sheet", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 447.994, "Sum_of_PO_Line_Total_SAR": 239806.4, "col2019_Average_Price": 535.289311910427, "Sum_of_PO_Converted_Qty": 157.728, "Sum_of_PO_Line_Total_SAR": 67665.3, "col2020_Average_Price": 428.999923919659, "Total_Sum_of_PO_Converted_Qty": 605.722, "Total_Sum_of_PO_Line_Total_SAR": 307471.7, "Overall_Average_Price": 507.611907772873, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 16764.8125890079 },
-            { "Material_Number": 1351234, "Material_Description": "LUBRCNT-SPEC-PURPS:CNTNR TYP 55 DRUMGAL", "Unspsc_MaterialService_Group": "15121500", "Unspsc_Desc": "Lubricating prep.", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 35, "Sum_of_PO_Line_Total_SAR": 495100, "col2019_Average_Price": 14145.7142857143, "Sum_of_PO_Converted_Qty": 14, "Sum_of_PO_Line_Total_SAR": 182000, "col2020_Average_Price": 13000, "Total_Sum_of_PO_Converted_Qty": 49, "Total_Sum_of_PO_Line_Total_SAR": 677100, "Overall_Average_Price": 13818.3673469388, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 16040.0000000002 },
-            { "Material_Number": 651871, "Material_Description": "VALVEGATE:VLV SZ 3/4INOPER MANUAL", "Unspsc_MaterialService_Group": "40141613", "Unspsc_Desc": "Gate valves", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 9550, "col2019_Average_Price": 9550, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 4400, "col2020_Average_Price": 2200, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 13950, "Overall_Average_Price": 4650, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 14700 },
-            { "Material_Number": 7218789, "Material_Description": "BAG-OL:MTRL WATER REPELLENT NYLONSZ WD", "Unspsc_MaterialService_Group": "24111507", "Unspsc_Desc": "Tool bags", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 300, "Sum_of_PO_Line_Total_SAR": 85800, "col2019_Average_Price": 286, "Sum_of_PO_Converted_Qty": 82, "Sum_of_PO_Line_Total_SAR": 12710, "col2020_Average_Price": 155, "Total_Sum_of_PO_Converted_Qty": 382, "Total_Sum_of_PO_Line_Total_SAR": 98510, "Overall_Average_Price": 257.879581151832, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 10742 },
-            { "Material_Number": 7075017, "Material_Description": "DRUMSTORAGE:TYP EMPTY", "Unspsc_MaterialService_Group": "24112100", "Unspsc_Desc": "Casks&barrels&drums", "Sum_of_PO_Converted_Qty": 1045, "Sum_of_PO_Line_Total_SAR": 94050.000, "col2018_Average_Price": 90.000, "Sum_of_PO_Converted_Qty": 550.000, "Sum_of_PO_Line_Total_SAR": 59500.000, "col2019_Average_Price": 108.182, "Sum_of_PO_Converted_Qty": 1100.000, "Sum_of_PO_Line_Total_SAR": 109000.000, "col2020_Average_Price": 99.091, "Total_Sum_of_PO_Converted_Qty": 2695.000, "Total_Sum_of_PO_Line_Total_SAR": 262550.000, "Overall_Average_Price": 97.421, "Cost_Savings_for_2019": -10000.000, "cost_saving_for_2020": 10000.000 },
-            { "Material_Number": 950565, "Material_Description": "OIL-INDUSTRL:TRD NM OMALA OIL S4 GXV 220", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 99000.000, "col2018_Average_Price": 9000.000, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 27000.000, "col2019_Average_Price": 9000.000, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 18000.000, "col2020_Average_Price": 6000.000, "Total_Sum_of_PO_Converted_Qty": 17.000, "Total_Sum_of_PO_Line_Total_SAR": 144000.000, "Overall_Average_Price": 8470.588, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 9000.000 },
-            { "Material_Number": 724968, "Material_Description": "BATTERY: P/N:25420-23150-71 Mdl/Mach#:", "Unspsc_MaterialService_Group": "26111700", "Unspsc_Desc": "Batteries&cell&acces", "Sum_of_PO_Converted_Qty": 17, "Sum_of_PO_Line_Total_SAR": 443900.000, "col2018_Average_Price": 26111.765, "Sum_of_PO_Converted_Qty": 12.000, "Sum_of_PO_Line_Total_SAR": 303657.000, "col2019_Average_Price": 25304.750, "Sum_of_PO_Converted_Qty": 6.000, "Sum_of_PO_Line_Total_SAR": 142857.000, "col2020_Average_Price": 23809.500, "Total_Sum_of_PO_Converted_Qty": 35.000, "Total_Sum_of_PO_Line_Total_SAR": 890414.000, "Overall_Average_Price": 25440.400, "Cost_Savings_for_2019": 9684.176, "cost_saving_for_2020": 8971.500 },
-            { "Material_Number": 937635, "Material_Description": "TAGSAFETY:DO NOT OPERATE THIS SWITCH", "Unspsc_MaterialService_Group": "55121502", "Unspsc_Desc": "Security tags", "Sum_of_PO_Converted_Qty": 2158, "Sum_of_PO_Line_Total_SAR": 59345.000, "col2018_Average_Price": 27.500, "Sum_of_PO_Converted_Qty": 985.000, "Sum_of_PO_Line_Total_SAR": 27087.500, "col2019_Average_Price": 27.500, "Sum_of_PO_Converted_Qty": 1722.000, "Sum_of_PO_Line_Total_SAR": 38745.000, "col2020_Average_Price": 22.500, "Total_Sum_of_PO_Converted_Qty": 4865.000, "Total_Sum_of_PO_Line_Total_SAR": 125177.500, "Overall_Average_Price": 25.730, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 8610.000 },
-            { "Material_Number": 160823, "Material_Description": "FLASHLIGHT:(4) AAYELLOW", "Unspsc_MaterialService_Group": "39111610", "Unspsc_Desc": "Flashlight", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 242, "Sum_of_PO_Line_Total_SAR": 48447, "col2019_Average_Price": 200.194214876033, "Sum_of_PO_Converted_Qty": 122, "Sum_of_PO_Line_Total_SAR": 16287, "col2020_Average_Price": 133.5, "Total_Sum_of_PO_Converted_Qty": 364, "Total_Sum_of_PO_Line_Total_SAR": 64734, "Overall_Average_Price": 177.840659340659, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 8136.69421487603 },
-            { "Material_Number": 7261358, "Material_Description": "LUBRICATOR:CAPACITY 125MLCNCT R 1/4INCH", "Unspsc_MaterialService_Group": "27112900", "Unspsc_Desc": "Dispensing tools", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 114, "Sum_of_PO_Line_Total_SAR": 28810, "col2019_Average_Price": 252.719298245614, "Sum_of_PO_Converted_Qty": 86, "Sum_of_PO_Line_Total_SAR": 14190, "col2020_Average_Price": 165, "Total_Sum_of_PO_Converted_Qty": 200, "Total_Sum_of_PO_Line_Total_SAR": 43000, "Overall_Average_Price": 215, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 7543.8596491228 },
-            { "Material_Number": 1613902, "Material_Description": "PLUG-VLV:TYP TIPVLV STYL GATEVLV SZ 1/", "Unspsc_MaterialService_Group": "40141600", "Unspsc_Desc": "Valves (unspecified)", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 28860, "col2019_Average_Price": 14430, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 6900, "col2020_Average_Price": 6900, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 35760, "Overall_Average_Price": 11920, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 7530 },
-            { "Material_Number": 6018239, "Material_Description": "CH-SOL:CLEARV705-DLICAN", "Unspsc_MaterialService_Group": "DM070304", "Unspsc_Desc": "Solvents - Other", "Sum_of_PO_Converted_Qty": 1000, "Sum_of_PO_Line_Total_SAR": 125000.000, "col2018_Average_Price": 125.000, "Sum_of_PO_Converted_Qty": 1000.000, "Sum_of_PO_Line_Total_SAR": 125000.000, "col2019_Average_Price": 125.000, "Sum_of_PO_Converted_Qty": 1500.000, "Sum_of_PO_Line_Total_SAR": 180000.000, "col2020_Average_Price": 120.000, "Total_Sum_of_PO_Converted_Qty": 3500.000, "Total_Sum_of_PO_Line_Total_SAR": 430000.000, "Overall_Average_Price": 122.857, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 7500.000 },
-            { "Material_Number": 1557099, "Material_Description": "AGENT:TRADE NAME TIP TOP HARDENER E40FU", "Unspsc_MaterialService_Group": "12160000", "Unspsc_Desc": "Additives", "Sum_of_PO_Converted_Qty": 5790, "Sum_of_PO_Line_Total_SAR": 121248.000, "col2018_Average_Price": 20.941, "Sum_of_PO_Converted_Qty": 5590.000, "Sum_of_PO_Line_Total_SAR": 46082.500, "col2019_Average_Price": 8.244, "Sum_of_PO_Converted_Qty": 1100.000, "Sum_of_PO_Line_Total_SAR": 1925.000, "col2020_Average_Price": 1.750, "Total_Sum_of_PO_Converted_Qty": 12480.000, "Total_Sum_of_PO_Line_Total_SAR": 169255.500, "Overall_Average_Price": 13.562, "Cost_Savings_for_2019": 70977.313, "cost_saving_for_2020": 7143.113 },
-            { "Material_Number": 6004478, "Material_Description": "HYDREXâ„¢ 9221", "Unspsc_MaterialService_Group": "DM110302", "Unspsc_Desc": "Anti Foam/ W", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 17000, "Sum_of_PO_Line_Total_SAR": 279650, "col2019_Average_Price": 16.45, "Sum_of_PO_Converted_Qty": 15000, "Sum_of_PO_Line_Total_SAR": 240000, "col2020_Average_Price": 16, "Total_Sum_of_PO_Converted_Qty": 32000, "Total_Sum_of_PO_Line_Total_SAR": 519650, "Overall_Average_Price": 16.2390625, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 6750 },
-            { "Material_Number": 6015664, "Material_Description": "HYDREXâ„¢ 5912", "Unspsc_MaterialService_Group": "DM110302", "Unspsc_Desc": "Anti Foam/ W", "Sum_of_PO_Converted_Qty": 23800, "Sum_of_PO_Line_Total_SAR": 420480.000, "col2018_Average_Price": 17.667, "Sum_of_PO_Converted_Qty": 6400.000, "Sum_of_PO_Line_Total_SAR": 105280.000, "col2019_Average_Price": 16.450, "Sum_of_PO_Converted_Qty": 12000.000, "Sum_of_PO_Line_Total_SAR": 190800.000, "col2020_Average_Price": 15.900, "Total_Sum_of_PO_Converted_Qty": 42200.000, "Total_Sum_of_PO_Line_Total_SAR": 716560.000, "Overall_Average_Price": 16.980, "Cost_Savings_for_2019": 7790.252, "cost_saving_for_2020": 6600.000 },
-            { "Material_Number": 1630380, "Material_Description": "GLVSPERFORMANCEMEDIUM28 X 28 X 18CM", "Unspsc_MaterialService_Group": "46181504", "Unspsc_Desc": "Protective gloves", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 150, "Sum_of_PO_Line_Total_SAR": 9750, "col2019_Average_Price": 65, "Sum_of_PO_Converted_Qty": 1100, "Sum_of_PO_Line_Total_SAR": 65500, "col2020_Average_Price": 59.5454545454545, "Total_Sum_of_PO_Converted_Qty": 1250, "Total_Sum_of_PO_Line_Total_SAR": 75250, "Overall_Average_Price": 60.2, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 6000.00000000005 },
-            { "Material_Number": 725960, "Material_Description": "OIL:TYP P3 (FOR BALZERS ROUGHING PUMP)C", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 6815.700, "col2018_Average_Price": 1363.140, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 5453.690, "col2019_Average_Price": 2726.845, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 2800.000, "col2020_Average_Price": 933.333, "Total_Sum_of_PO_Converted_Qty": 10.000, "Total_Sum_of_PO_Line_Total_SAR": 15069.390, "Overall_Average_Price": 1506.939, "Cost_Savings_for_2019": -2727.410, "cost_saving_for_2020": 5380.535 },
-            { "Material_Number": 1623474, "Material_Description": "KIT-VLV-RPRFOR SAFETY RELIEF VALVE", "Unspsc_MaterialService_Group": "40141636", "Unspsc_Desc": "Valve kits", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 8750, "col2019_Average_Price": 8750, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 3458, "col2020_Average_Price": 3458, "Total_Sum_of_PO_Converted_Qty": 2, "Total_Sum_of_PO_Line_Total_SAR": 12208, "Overall_Average_Price": 6104, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 5292 },
-            { "Material_Number": 7164140, "Material_Description": "VALVE GATE: VALVE SIZE 10INSTYL BB", "Unspsc_MaterialService_Group": "40141613", "Unspsc_Desc": "Gate valves", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 27927, "col2019_Average_Price": 9309, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 69272, "col2020_Average_Price": 8659, "Total_Sum_of_PO_Converted_Qty": 11, "Total_Sum_of_PO_Line_Total_SAR": 97199, "Overall_Average_Price": 8836.27272727273, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 5200 },
-            { "Material_Number": 398585, "Material_Description": "VALVESOLENOID:ELEC TRT 24VDC 19.7W.", "Unspsc_MaterialService_Group": "40141605", "Unspsc_Desc": "Solenoid valves", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 6800, "col2019_Average_Price": 1360, "Sum_of_PO_Converted_Qty": 20, "Sum_of_PO_Line_Total_SAR": 22000, "col2020_Average_Price": 1100, "Total_Sum_of_PO_Converted_Qty": 25, "Total_Sum_of_PO_Line_Total_SAR": 28800, "Overall_Average_Price": 1152, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 5200 },
-            { "Material_Number": 821514, "Material_Description": "LAMPHID:TYP HIGH PRESSURE SODIUM", "Unspsc_MaterialService_Group": "39101600", "Unspsc_Desc": "Lamps and lightbulbs", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 38, "Sum_of_PO_Line_Total_SAR": 4256, "col2019_Average_Price": 112, "Sum_of_PO_Converted_Qty": 170, "Sum_of_PO_Line_Total_SAR": 13940, "col2020_Average_Price": 82, "Total_Sum_of_PO_Converted_Qty": 208, "Total_Sum_of_PO_Line_Total_SAR": 18196, "Overall_Average_Price": 87.4807692307692, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 5100 },
-            { "Material_Number": 157534, "Material_Description": "LIGHTINDICATING:TYP PILOTVOLT 120V", "Unspsc_MaterialService_Group": "39121534", "Unspsc_Desc": "Indic./pilot light", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 2100, "col2019_Average_Price": 1050, "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 6200, "col2020_Average_Price": 620, "Total_Sum_of_PO_Converted_Qty": 12, "Total_Sum_of_PO_Line_Total_SAR": 8300, "Overall_Average_Price": 691.666666666667, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 4300 },
-            { "Material_Number": 6000644, "Material_Description": "ETHYLENE DICHLORIDE 99.9 PCT", "Unspsc_MaterialService_Group": "DM110207", "Unspsc_Desc": "Organic", "Sum_of_PO_Converted_Qty": 92840, "Sum_of_PO_Line_Total_SAR": 453554.000, "col2018_Average_Price": 4.885, "Sum_of_PO_Converted_Qty": 65920.000, "Sum_of_PO_Line_Total_SAR": 327840.000, "col2019_Average_Price": 4.973, "Sum_of_PO_Converted_Qty": 6000.000, "Sum_of_PO_Line_Total_SAR": 25800.000, "col2020_Average_Price": 4.300, "Total_Sum_of_PO_Converted_Qty": 164760.000, "Total_Sum_of_PO_Line_Total_SAR": 807194.000, "Overall_Average_Price": 4.899, "Cost_Savings_for_2019": -5799.073, "cost_saving_for_2020": 4039.806 },
-            { "Material_Number": 157538, "Material_Description": "LIGHTINDICATING:TYP PILOTVOLT 120V", "Unspsc_MaterialService_Group": "39121534", "Unspsc_Desc": "Indic./pilot light", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 3150, "col2019_Average_Price": 1050, "Sum_of_PO_Converted_Qty": 9, "Sum_of_PO_Line_Total_SAR": 5580, "col2020_Average_Price": 620, "Total_Sum_of_PO_Converted_Qty": 12, "Total_Sum_of_PO_Line_Total_SAR": 8730, "Overall_Average_Price": 727.5, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 3870 },
-            { "Material_Number": 20342, "Material_Description": "OILINDUSTRIAL:TYP HYDRAULICCTNR DRUM 2", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 3800, "col2019_Average_Price": 1900, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 7590, "col2020_Average_Price": 1265, "Total_Sum_of_PO_Converted_Qty": 8, "Total_Sum_of_PO_Line_Total_SAR": 11390, "Overall_Average_Price": 1423.75, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 3810 },
-            { "Material_Number": 7065964, "Material_Description": "CHEMICAL:LIQUID", "Unspsc_MaterialService_Group": "12000000", "Unspsc_Desc": "Chem incl Biochm&Gas", "Sum_of_PO_Converted_Qty": 400, "Sum_of_PO_Line_Total_SAR": 46000.000, "col2018_Average_Price": 115.000, "Sum_of_PO_Converted_Qty": 600.000, "Sum_of_PO_Line_Total_SAR": 69000.000, "col2019_Average_Price": 115.000, "Sum_of_PO_Converted_Qty": 100.000, "Sum_of_PO_Line_Total_SAR": 8000.000, "col2020_Average_Price": 80.000, "Total_Sum_of_PO_Converted_Qty": 1100.000, "Total_Sum_of_PO_Line_Total_SAR": 123000.000, "Overall_Average_Price": 111.818, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 3500.000 },
-            { "Material_Number": 658509, "Material_Description": "SCRPR:TYP HAND NON-SPARKINGMTRL BRASSS", "Unspsc_MaterialService_Group": "27112009", "Unspsc_Desc": "Scrapers", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 48, "Sum_of_PO_Line_Total_SAR": 30399.34, "col2019_Average_Price": 633.319583333333, "Sum_of_PO_Converted_Qty": 7, "Sum_of_PO_Line_Total_SAR": 1155, "col2020_Average_Price": 165, "Total_Sum_of_PO_Converted_Qty": 55, "Total_Sum_of_PO_Line_Total_SAR": 31554.34, "Overall_Average_Price": 573.715272727273, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 3278.23708333333 },
-            { "Material_Number": 919228, "Material_Description": "ASSEMBLY:TYP INTERSTAGE LOWER BEARINGAP", "Unspsc_MaterialService_Group": "23153402", "Unspsc_Desc": "Assembly fixtures", "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 123920.000, "col2018_Average_Price": 15490.000, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 90455.000, "col2019_Average_Price": 12922.143, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 35685.000, "col2020_Average_Price": 11895.000, "Total_Sum_of_PO_Converted_Qty": 18.000, "Total_Sum_of_PO_Line_Total_SAR": 250060.000, "Overall_Average_Price": 13892.222, "Cost_Savings_for_2019": 17975.000, "cost_saving_for_2020": 3081.429 },
-            { "Material_Number": 7312593, "Material_Description": "AIR-CNDTNR:TYP AIR CONDITIONING SYSTEM P", "Unspsc_MaterialService_Group": "40100000", "Unspsc_Desc": "Heating and ventilat", "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 3080.000, "col2018_Average_Price": 1540.000, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 3210.000, "col2019_Average_Price": 3210.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 3400.000, "col2020_Average_Price": 1700.000, "Total_Sum_of_PO_Converted_Qty": 5.000, "Total_Sum_of_PO_Line_Total_SAR": 9690.000, "Overall_Average_Price": 1938.000, "Cost_Savings_for_2019": -1670.000, "cost_saving_for_2020": 3020.000 },
-            { "Material_Number": 871544, "Material_Description": "LINK:TYP GUIDE VANE", "Unspsc_MaterialService_Group": "41106401", "Unspsc_Desc": "Adaptors or linkers", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 25088, "col2019_Average_Price": 3136, "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 31636, "col2020_Average_Price": 2876, "Total_Sum_of_PO_Converted_Qty": 19, "Total_Sum_of_PO_Line_Total_SAR": 56724, "Overall_Average_Price": 2985.47368421053, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 2860 },
-            { "Material_Number": 7197727, "Material_Description": "PAINT:TYP ROAD MARKINGCOLR YELLOWCTNR", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": 31, "Sum_of_PO_Line_Total_SAR": 15620.000, "col2018_Average_Price": 503.871, "Sum_of_PO_Converted_Qty": 10.000, "Sum_of_PO_Line_Total_SAR": 5700.000, "col2019_Average_Price": 570.000, "Sum_of_PO_Converted_Qty": 5.000, "Sum_of_PO_Line_Total_SAR": 100.000, "col2020_Average_Price": 20.000, "Total_Sum_of_PO_Converted_Qty": 46.000, "Total_Sum_of_PO_Line_Total_SAR": 21420.000, "Overall_Average_Price": 465.652, "Cost_Savings_for_2019": -661.290, "cost_saving_for_2020": 2750.000 },
-            { "Material_Number": 6002254, "Material_Description": "ADDITIVE:TYP 5191LIQUIDDRUM", "Unspsc_MaterialService_Group": "12160000", "Unspsc_Desc": "Additives", "Sum_of_PO_Converted_Qty": 4402, "Sum_of_PO_Line_Total_SAR": 440200.000, "col2018_Average_Price": 100.000, "Sum_of_PO_Converted_Qty": 1527.000, "Sum_of_PO_Line_Total_SAR": 148665.000, "col2019_Average_Price": 97.358, "Sum_of_PO_Converted_Qty": 1136.000, "Sum_of_PO_Line_Total_SAR": 107920.000, "col2020_Average_Price": 95.000, "Total_Sum_of_PO_Converted_Qty": 7065.000, "Total_Sum_of_PO_Line_Total_SAR": 696785.000, "Overall_Average_Price": 98.625, "Cost_Savings_for_2019": 4035.000, "cost_saving_for_2020": 2678.193 },
-            { "Material_Number": 7189847, "Material_Description": "CARD:TYP I CLASSSIZE WD 2.127 X LG 3.37", "Unspsc_MaterialService_Group": "14111605", "Unspsc_Desc": "Greet/note/post card", "Sum_of_PO_Converted_Qty": 49400, "Sum_of_PO_Line_Total_SAR": 742105.000, "col2018_Average_Price": 15.022, "Sum_of_PO_Converted_Qty": 51150.000, "Sum_of_PO_Line_Total_SAR": 764100.000, "col2019_Average_Price": 14.938, "Sum_of_PO_Converted_Qty": 11500.000, "Sum_of_PO_Line_Total_SAR": 169160.000, "col2020_Average_Price": 14.710, "Total_Sum_of_PO_Converted_Qty": 112050.000, "Total_Sum_of_PO_Line_Total_SAR": 1675365.000, "Overall_Average_Price": 14.952, "Cost_Savings_for_2019": 4294.145, "cost_saving_for_2020": 2631.789 },
-            { "Material_Number": 171742, "Material_Description": "MODULE:", "Unspsc_MaterialService_Group": "39121543", "Unspsc_Desc": "Relay boards/modules", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 8279, "col2019_Average_Price": 8279, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 13986, "col2020_Average_Price": 6993, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 22265, "Overall_Average_Price": 7421.66666666667, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 2572 },
-            { "Material_Number": 1587793, "Material_Description": "GLVS:TYP CHEMICAL RESISTANCESZ MEDIUMM", "Unspsc_MaterialService_Group": "46181504", "Unspsc_Desc": "Protective gloves", "Sum_of_PO_Converted_Qty": 400, "Sum_of_PO_Line_Total_SAR": 19400.000, "col2018_Average_Price": 48.500, "Sum_of_PO_Converted_Qty": 200.000, "Sum_of_PO_Line_Total_SAR": 9700.000, "col2019_Average_Price": 48.500, "Sum_of_PO_Converted_Qty": 80.000, "Sum_of_PO_Line_Total_SAR": 1456.800, "col2020_Average_Price": 18.210, "Total_Sum_of_PO_Converted_Qty": 680.000, "Total_Sum_of_PO_Line_Total_SAR": 30556.800, "Overall_Average_Price": 44.936, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 2423.200 },
-            { "Material_Number": 7247897, "Material_Description": "DRUM-STRGEMPTYHINGED COVERSTEEL210L", "Unspsc_MaterialService_Group": "24112100", "Unspsc_Desc": "Casks&barrels&drums", "Sum_of_PO_Converted_Qty": 600, "Sum_of_PO_Line_Total_SAR": 54000.000, "col2018_Average_Price": 90.000, "Sum_of_PO_Converted_Qty": 950.000, "Sum_of_PO_Line_Total_SAR": 85800.000, "col2019_Average_Price": 90.316, "Sum_of_PO_Converted_Qty": 1000.000, "Sum_of_PO_Line_Total_SAR": 88000.000, "col2020_Average_Price": 88.000, "Total_Sum_of_PO_Converted_Qty": 2550.000, "Total_Sum_of_PO_Line_Total_SAR": 227800.000, "Overall_Average_Price": 89.333, "Cost_Savings_for_2019": -300.000, "cost_saving_for_2020": 2315.789 },
-            { "Material_Number": 346993, "Material_Description": "TIRE: TYP PNEUMATIC TUBELESS", "Unspsc_MaterialService_Group": "25202205", "Unspsc_Desc": "Aircraft tires", "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 26400.000, "col2018_Average_Price": 13200.000, "Sum_of_PO_Converted_Qty": 60.000, "Sum_of_PO_Line_Total_SAR": 787400.000, "col2019_Average_Price": 13123.333, "Sum_of_PO_Converted_Qty": 18.000, "Sum_of_PO_Line_Total_SAR": 234000.000, "col2020_Average_Price": 13000.000, "Total_Sum_of_PO_Converted_Qty": 80.000, "Total_Sum_of_PO_Line_Total_SAR": 1047800.000, "Overall_Average_Price": 13097.500, "Cost_Savings_for_2019": 4600.000, "cost_saving_for_2020": 2220.000 },
-            { "Material_Number": 516534, "Material_Description": "GLOVES: TYP PERFORMANCE GLOVESIZE LARGE", "Unspsc_MaterialService_Group": "46181504", "Unspsc_Desc": "Protective gloves", "Sum_of_PO_Converted_Qty": 1431, "Sum_of_PO_Line_Total_SAR": 100201.250, "col2018_Average_Price": 70.022, "Sum_of_PO_Converted_Qty": 1830.000, "Sum_of_PO_Line_Total_SAR": 114981.000, "col2019_Average_Price": 62.831, "Sum_of_PO_Converted_Qty": 957.000, "Sum_of_PO_Line_Total_SAR": 58035.000, "col2020_Average_Price": 60.643, "Total_Sum_of_PO_Converted_Qty": 4218.000, "Total_Sum_of_PO_Line_Total_SAR": 273217.250, "Overall_Average_Price": 64.774, "Cost_Savings_for_2019": 13158.963, "cost_saving_for_2020": 2094.408 },
-            { "Material_Number": 702357, "Material_Description": "BRGSLEEVE:TYP STRIP BUSHING", "Unspsc_MaterialService_Group": "31171509", "Unspsc_Desc": "Sleeve bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 7, "Sum_of_PO_Line_Total_SAR": 11123, "col2019_Average_Price": 1589, "Sum_of_PO_Converted_Qty": 15, "Sum_of_PO_Line_Total_SAR": 21870, "col2020_Average_Price": 1458, "Total_Sum_of_PO_Converted_Qty": 22, "Total_Sum_of_PO_Line_Total_SAR": 32993, "Overall_Average_Price": 1499.68181818182, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1965 },
-            { "Material_Number": 1555774, "Material_Description": "DISCRUPTURE:TYP REVERSE ACTING SRL BTM", "Unspsc_MaterialService_Group": "40173900", "Unspsc_Desc": "Pipe rupture disks", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 8152, "col2019_Average_Price": 4076, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 6320, "col2020_Average_Price": 3160, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 14472, "Overall_Average_Price": 3618, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1832 },
-            { "Material_Number": 295350, "Material_Description": "WIREELECTRICAL:SZ DIA 0.85MM", "Unspsc_MaterialService_Group": "26121500", "Unspsc_Desc": "Electrical wire", "Sum_of_PO_Converted_Qty": 16.9, "Sum_of_PO_Line_Total_SAR": 1605.500, "col2018_Average_Price": 95.000, "Sum_of_PO_Converted_Qty": 87.800, "Sum_of_PO_Line_Total_SAR": 8341.000, "col2019_Average_Price": 95.000, "Sum_of_PO_Converted_Qty": 50.000, "Sum_of_PO_Line_Total_SAR": 3000.000, "col2020_Average_Price": 60.000, "Total_Sum_of_PO_Converted_Qty": 154.700, "Total_Sum_of_PO_Line_Total_SAR": 12946.500, "Overall_Average_Price": 83.688, "Cost_Savings_for_2019": 0, "cost_saving_for_2020": 1750.000 },
-            { "Material_Number": 251810, "Material_Description": "SEALMECHANICAL:APPL PUMPP/N:5920104MN", "Unspsc_MaterialService_Group": "31181604", "Unspsc_Desc": "Seal mechanical", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 17744.4, "col2019_Average_Price": 4436.1, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 2810, "col2020_Average_Price": 2810, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 20554.4, "Overall_Average_Price": 4110.88, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1626.1 },
-            { "Material_Number": 956200, "Material_Description": "REFRACTORY: GRADE GREENCAST 94", "Unspsc_MaterialService_Group": "31371100", "Unspsc_Desc": "Refractory bricks", "Sum_of_PO_Converted_Qty": 2750, "Sum_of_PO_Line_Total_SAR": 35750.000, "col2018_Average_Price": 13.000, "Sum_of_PO_Converted_Qty": 3225.000, "Sum_of_PO_Line_Total_SAR": 51475.000, "col2019_Average_Price": 15.961, "Sum_of_PO_Converted_Qty": 1600.000, "Sum_of_PO_Line_Total_SAR": 24000.000, "col2020_Average_Price": 15.000, "Total_Sum_of_PO_Converted_Qty": 7575.000, "Total_Sum_of_PO_Line_Total_SAR": 111225.000, "Overall_Average_Price": 14.683, "Cost_Savings_for_2019": -9550.000, "cost_saving_for_2020": 1537.984 },
-            { "Material_Number": 1593481, "Material_Description": "SNSR:TYP PH GLASS ELECTRODE FOR ANALYZER", "Unspsc_MaterialService_Group": "41111900", "Unspsc_Desc": "Indicat&record inst", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 3097.000, "col2018_Average_Price": 3097.000, "Sum_of_PO_Converted_Qty": 8.000, "Sum_of_PO_Line_Total_SAR": 24776.000, "col2019_Average_Price": 3097.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 4690.780, "col2020_Average_Price": 2345.390, "Total_Sum_of_PO_Converted_Qty": 11.000, "Total_Sum_of_PO_Line_Total_SAR": 32563.780, "Overall_Average_Price": 2960.344, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 1503.220 },
-            { "Material_Number": 7325337, "Material_Description": "CBL-JUMPR:LG 58MMCNDUCTR DIA 2.5MM2CLM", "Unspsc_MaterialService_Group": "39121441", "Unspsc_Desc": "ElectricalJumperCabl", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 38, "Sum_of_PO_Line_Total_SAR": 1900, "col2019_Average_Price": 50, "Sum_of_PO_Converted_Qty": 196, "Sum_of_PO_Line_Total_SAR": 8302, "col2020_Average_Price": 42.3571428571429, "Total_Sum_of_PO_Converted_Qty": 234, "Total_Sum_of_PO_Line_Total_SAR": 10202, "Overall_Average_Price": 43.5982905982906, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1497.99999999999 },
-            { "Material_Number": 1200390, "Material_Description": "SDUM-HYDRXD-TECH:CMPSTN 1.2NPHYSCL FRM", "Unspsc_MaterialService_Group": "12352305", "Unspsc_Desc": "Inorganic hydroxides", "Sum_of_PO_Converted_Qty": 35, "Sum_of_PO_Line_Total_SAR": 44975.000, "col2018_Average_Price": 1285.000, "Sum_of_PO_Converted_Qty": 30.000, "Sum_of_PO_Line_Total_SAR": 32160.000, "col2019_Average_Price": 1072.000, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 1725.000, "col2020_Average_Price": 575.000, "Total_Sum_of_PO_Converted_Qty": 68.000, "Total_Sum_of_PO_Line_Total_SAR": 78860.000, "Overall_Average_Price": 1159.706, "Cost_Savings_for_2019": 6390.000, "cost_saving_for_2020": 1491.000 },
-            { "Material_Number": 833039, "Material_Description": "VIAL:TYP SNAPSZ OD 12 X HT 32MMCAP 2ML", "Unspsc_MaterialService_Group": "41000000", "Unspsc_Desc": "lab&Meas&Obser&Test", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 28, "Sum_of_PO_Line_Total_SAR": 4864.5, "col2019_Average_Price": 173.732142857143, "Sum_of_PO_Converted_Qty": 70, "Sum_of_PO_Line_Total_SAR": 10710, "col2020_Average_Price": 153, "Total_Sum_of_PO_Converted_Qty": 98, "Total_Sum_of_PO_Line_Total_SAR": 15574.5, "Overall_Average_Price": 158.923469387755, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1451.25000000001 },
-            { "Material_Number": 7087812, "Material_Description": "FUEL:TYP DIESELROAD TANKER", "Unspsc_MaterialService_Group": "15100000", "Unspsc_Desc": "Fuels", "Sum_of_PO_Converted_Qty": 90600, "Sum_of_PO_Line_Total_SAR": 41857.200, "col2018_Average_Price": 0.462, "Sum_of_PO_Converted_Qty": 16000.000, "Sum_of_PO_Line_Total_SAR": 7392.000, "col2019_Average_Price": 0.462, "Sum_of_PO_Converted_Qty": 100000.000, "Sum_of_PO_Line_Total_SAR": 44760.000, "col2020_Average_Price": 0.448, "Total_Sum_of_PO_Converted_Qty": 206600.000, "Total_Sum_of_PO_Line_Total_SAR": 94009.200, "Overall_Average_Price": 0.455, "Cost_Savings_for_2019": 0, "cost_saving_for_2020": 1440.000 },
-            { "Material_Number": 1567560, "Material_Description": "OIL-INDUSTRL:TYP PARAFFINICTRD NM RENOP", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": 1456, "Sum_of_PO_Line_Total_SAR": 14560.000, "col2018_Average_Price": 10.000, "Sum_of_PO_Converted_Qty": 1956.000, "Sum_of_PO_Line_Total_SAR": 18960.000, "col2019_Average_Price": 9.693, "Sum_of_PO_Converted_Qty": 1372.000, "Sum_of_PO_Line_Total_SAR": 11873.100, "col2020_Average_Price": 8.654, "Total_Sum_of_PO_Converted_Qty": 4784.000, "Total_Sum_of_PO_Line_Total_SAR": 45393.100, "Overall_Average_Price": 9.489, "Cost_Savings_for_2019": 600.000, "cost_saving_for_2020": 1426.041 },
-            { "Material_Number": 7183507, "Material_Description": "PAINT:TYP ROAD MARKINGCOLOR BLACK", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 1080, "col2019_Average_Price": 90, "Sum_of_PO_Converted_Qty": 20, "Sum_of_PO_Line_Total_SAR": 380, "col2020_Average_Price": 19, "Total_Sum_of_PO_Converted_Qty": 32, "Total_Sum_of_PO_Line_Total_SAR": 1460, "Overall_Average_Price": 45.625, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1420 },
-            { "Material_Number": 447318, "Material_Description": "GSKTSPWD:12IN300LBGRAFOILSS 304", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 150, "Sum_of_PO_Line_Total_SAR": 4230, "col2019_Average_Price": 28.2, "Sum_of_PO_Converted_Qty": 134, "Sum_of_PO_Line_Total_SAR": 2430.76, "col2020_Average_Price": 18.14, "Total_Sum_of_PO_Converted_Qty": 284, "Total_Sum_of_PO_Line_Total_SAR": 6660.76, "Overall_Average_Price": 23.4533802816901, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1348.04 },
-            { "Material_Number": 388113, "Material_Description": "DEVICE ADJUST. SET SCREW FOR VSKH4 B/Z", "Unspsc_MaterialService_Group": "31161505", "Unspsc_Desc": "Set screws", "Sum_of_PO_Converted_Qty": 50, "Sum_of_PO_Line_Total_SAR": 10500.000, "col2018_Average_Price": 210.000, "Sum_of_PO_Converted_Qty": 116.000, "Sum_of_PO_Line_Total_SAR": 24360.000, "col2019_Average_Price": 210.000, "Sum_of_PO_Converted_Qty": 150.000, "Sum_of_PO_Line_Total_SAR": 30200.000, "col2020_Average_Price": 201.333, "Total_Sum_of_PO_Converted_Qty": 316.000, "Total_Sum_of_PO_Line_Total_SAR": 65060.000, "Overall_Average_Price": 205.886, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 1300.000 },
-            { "Material_Number": 302474, "Material_Description": "LENS REPLAC.ADDA SPEC.(GREEN)-SHADE 7", "Unspsc_MaterialService_Group": "31241501", "Unspsc_Desc": "Lenses", "Sum_of_PO_Converted_Qty": 438, "Sum_of_PO_Line_Total_SAR": 25842.000, "col2018_Average_Price": 59.000, "Sum_of_PO_Converted_Qty": 200.000, "Sum_of_PO_Line_Total_SAR": 3586.000, "col2019_Average_Price": 17.930, "Sum_of_PO_Converted_Qty": 90.000, "Sum_of_PO_Line_Total_SAR": 315.000, "col2020_Average_Price": 3.500, "Total_Sum_of_PO_Converted_Qty": 728.000, "Total_Sum_of_PO_Line_Total_SAR": 29743.000, "Overall_Average_Price": 40.856, "Cost_Savings_for_2019": 8214.000, "cost_saving_for_2020": 1298.700 },
-            { "Material_Number": 7261391, "Material_Description": "LUBRICATOR:CAPACITY 250MLCNCT R 1/4INCH", "Unspsc_MaterialService_Group": "27112900", "Unspsc_Desc": "Dispensing tools", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 64, "Sum_of_PO_Line_Total_SAR": 21040, "col2019_Average_Price": 328.75, "Sum_of_PO_Converted_Qty": 18, "Sum_of_PO_Line_Total_SAR": 4680, "col2020_Average_Price": 260, "Total_Sum_of_PO_Converted_Qty": 82, "Total_Sum_of_PO_Line_Total_SAR": 25720, "Overall_Average_Price": 313.658536585366, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1237.5 },
-            { "Material_Number": 525798, "Material_Description": "STUD CNTNS THD:DIA 1INTHRD 8 UNCLG 250", "Unspsc_MaterialService_Group": "31161619", "Unspsc_Desc": "Stud bolts", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 59, "Sum_of_PO_Line_Total_SAR": 16225, "col2019_Average_Price": 275, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 150, "col2020_Average_Price": 30, "Total_Sum_of_PO_Converted_Qty": 64, "Total_Sum_of_PO_Line_Total_SAR": 16375, "Overall_Average_Price": 255.859375, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1225 },
-            { "Material_Number": 905651, "Material_Description": "FLASK:TYP DISTILLATIONCAP 200ML", "Unspsc_MaterialService_Group": "41104800", "Unspsc_Desc": "Laborotory equipment", "Sum_of_PO_Converted_Qty": 48, "Sum_of_PO_Line_Total_SAR": 17780.600, "col2018_Average_Price": 370.429, "Sum_of_PO_Converted_Qty": 25.000, "Sum_of_PO_Line_Total_SAR": 11816.800, "col2019_Average_Price": 472.672, "Sum_of_PO_Converted_Qty": 34.000, "Sum_of_PO_Line_Total_SAR": 14854.580, "col2020_Average_Price": 436.899, "Total_Sum_of_PO_Converted_Qty": 107.000, "Total_Sum_of_PO_Line_Total_SAR": 44451.980, "Overall_Average_Price": 415.439, "Cost_Savings_for_2019": -2556.071, "cost_saving_for_2020": 1216.268 },
-            { "Material_Number": 146571, "Material_Description": "TRANSMITTERDIFF.PRESS.:TYP ANALOG", "Unspsc_MaterialService_Group": "41112410", "Unspsc_Desc": "Pressure transmitter", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 44862.9, "col2019_Average_Price": 22431.45, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 21220, "col2020_Average_Price": 21220, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 66082.9, "Overall_Average_Price": 22027.6333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1211.45 },
-            { "Material_Number": 7155782, "Material_Description": "WRENCHADJUSTABLE:15/16INLG 6IN", "Unspsc_MaterialService_Group": "27111707", "Unspsc_Desc": "Adjustable wrenches", "Sum_of_PO_Converted_Qty": 24, "Sum_of_PO_Line_Total_SAR": 1560.000, "col2018_Average_Price": 65.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 760.000, "col2019_Average_Price": 380.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 330.000, "col2020_Average_Price": 82.500, "Total_Sum_of_PO_Converted_Qty": 30.000, "Total_Sum_of_PO_Line_Total_SAR": 2650.000, "Overall_Average_Price": 88.333, "Cost_Savings_for_2019": -630.000, "cost_saving_for_2020": 1190.000 },
-            { "Material_Number": 407369, "Material_Description": "OILINDUSTRIAL:TYP HYDRAULICTRADE NAME", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": 77, "Sum_of_PO_Line_Total_SAR": 137335.000, "col2018_Average_Price": 1783.571, "Sum_of_PO_Converted_Qty": 51.000, "Sum_of_PO_Line_Total_SAR": 85130.000, "col2019_Average_Price": 1669.216, "Sum_of_PO_Converted_Qty": 27.000, "Sum_of_PO_Line_Total_SAR": 43883.300, "col2020_Average_Price": 1625.307, "Total_Sum_of_PO_Converted_Qty": 155.000, "Total_Sum_of_PO_Line_Total_SAR": 266348.300, "Overall_Average_Price": 1718.376, "Cost_Savings_for_2019": 5832.143, "cost_saving_for_2020": 1185.524 },
-            { "Material_Number": 1528903, "Material_Description": "O RING:P/N:N34135MNFR:BAUER COMPRESSORI", "Unspsc_MaterialService_Group": "31181506", "Unspsc_Desc": "O ring gaskets", "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 3280.000, "col2018_Average_Price": 410.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 1640.000, "col2019_Average_Price": 410.000, "Sum_of_PO_Converted_Qty": 8.000, "Sum_of_PO_Line_Total_SAR": 2176.000, "col2020_Average_Price": 272.000, "Total_Sum_of_PO_Converted_Qty": 20.000, "Total_Sum_of_PO_Line_Total_SAR": 7096.000, "Overall_Average_Price": 354.800, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 1104.000 },
-            { "Material_Number": 1596932, "Material_Description": "SPRG-ASMBLYCOVER HANDLE135MM160MM", "Unspsc_MaterialService_Group": "31161900", "Unspsc_Desc": "Springs", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 10337.2, "col2019_Average_Price": 2067.44, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 3150, "col2020_Average_Price": 1575, "Total_Sum_of_PO_Converted_Qty": 7, "Total_Sum_of_PO_Line_Total_SAR": 13487.2, "Overall_Average_Price": 1926.74285714286, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 984.88 },
-            { "Material_Number": 6000697, "Material_Description": "GAS:OXYGEN (O2)2.5PCT", "Unspsc_MaterialService_Group": "CH04", "Unspsc_Desc": "Industr &Calib Gases", "Sum_of_PO_Converted_Qty": 90, "Sum_of_PO_Line_Total_SAR": 26910.000, "col2018_Average_Price": 299.000, "Sum_of_PO_Converted_Qty": 150.000, "Sum_of_PO_Line_Total_SAR": 44850.000, "col2019_Average_Price": 299.000, "Sum_of_PO_Converted_Qty": 20.000, "Sum_of_PO_Line_Total_SAR": 5000.000, "col2020_Average_Price": 250.000, "Total_Sum_of_PO_Converted_Qty": 260.000, "Total_Sum_of_PO_Line_Total_SAR": 76760.000, "Overall_Average_Price": 295.231, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 980.000 },
-            { "Material_Number": 1615917, "Material_Description": "KIT-VLV-RPR:TYP POSITIONER MOUNTINGAPL", "Unspsc_MaterialService_Group": "40141636", "Unspsc_Desc": "Valve kits", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 7, "Sum_of_PO_Line_Total_SAR": 7715.44, "col2019_Average_Price": 1102.20571428571, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 5640, "col2020_Average_Price": 940, "Total_Sum_of_PO_Converted_Qty": 13, "Total_Sum_of_PO_Line_Total_SAR": 13355.44, "Overall_Average_Price": 1027.34153846154, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 973.23428571426 },
-            { "Material_Number": 813494, "Material_Description": "ASSEMBLY:IGNITOR", "Unspsc_MaterialService_Group": "23153402", "Unspsc_Desc": "Assembly fixtures", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 6098.67, "col2019_Average_Price": 2032.89, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 3094.32, "col2020_Average_Price": 1547.16, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 9192.99, "Overall_Average_Price": 1838.598, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 971.46 },
-            { "Material_Number": 7019978, "Material_Description": "ELBOWPIPE:SZ 3INCS ASTM A23490BWRT", "Unspsc_MaterialService_Group": "40172800", "Unspsc_Desc": "Pipe elbows", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 283.000, "col2018_Average_Price": 283.000, "Sum_of_PO_Converted_Qty": 30.000, "Sum_of_PO_Line_Total_SAR": 12300.000, "col2019_Average_Price": 410.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 725.000, "col2020_Average_Price": 181.250, "Total_Sum_of_PO_Converted_Qty": 35.000, "Total_Sum_of_PO_Line_Total_SAR": 13308.000, "Overall_Average_Price": 380.229, "Cost_Savings_for_2019": -3810.000, "cost_saving_for_2020": 915.000 },
-            { "Material_Number": 608692, "Material_Description": "BEAMSTRUCTURAL:TYP ISZ 150MMCS", "Unspsc_MaterialService_Group": "30101700", "Unspsc_Desc": "Beams", "Sum_of_PO_Converted_Qty": 9, "Sum_of_PO_Line_Total_SAR": 1044.000, "col2018_Average_Price": 116.000, "Sum_of_PO_Converted_Qty": 39.000, "Sum_of_PO_Line_Total_SAR": 4524.000, "col2019_Average_Price": 116.000, "Sum_of_PO_Converted_Qty": 39.000, "Sum_of_PO_Line_Total_SAR": 3642.600, "col2020_Average_Price": 93.400, "Total_Sum_of_PO_Converted_Qty": 87.000, "Total_Sum_of_PO_Line_Total_SAR": 9210.600, "Overall_Average_Price": 105.869, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 881.400 },
-            { "Material_Number": 618601, "Material_Description": "CPCTRFIXED60MICRO F450VCYLINDRICAL.", "Unspsc_MaterialService_Group": "32121500", "Unspsc_Desc": "Capacitors", "Sum_of_PO_Converted_Qty": 78, "Sum_of_PO_Line_Total_SAR": 14352.000, "col2018_Average_Price": 184.000, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 2753.060, "col2019_Average_Price": 393.294, "Sum_of_PO_Converted_Qty": 6.000, "Sum_of_PO_Line_Total_SAR": 1500.000, "col2020_Average_Price": 250.000, "Total_Sum_of_PO_Converted_Qty": 91.000, "Total_Sum_of_PO_Line_Total_SAR": 18605.060, "Overall_Average_Price": 204.451, "Cost_Savings_for_2019": -1465.060, "cost_saving_for_2020": 859.766 },
-            { "Material_Number": 7087509, "Material_Description": "OVEN:TYP MICROWAVECAP 30L", "Unspsc_MaterialService_Group": "48101517", "Unspsc_Desc": "Commercial use ovens", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 1303, "col2019_Average_Price": 1303, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 4440, "col2020_Average_Price": 1110, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 5743, "Overall_Average_Price": 1148.6, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 772 },
-            { "Material_Number": 1072378, "Material_Description": "OILINDUSTRIAL:TYP CIRCULATINGTRADE NAM", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 10988.000, "col2018_Average_Price": 2747.000, "Sum_of_PO_Converted_Qty": 8.000, "Sum_of_PO_Line_Total_SAR": 20982.000, "col2019_Average_Price": 2622.750, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 4500.000, "col2020_Average_Price": 2250.000, "Total_Sum_of_PO_Converted_Qty": 14.000, "Total_Sum_of_PO_Line_Total_SAR": 36470.000, "Overall_Average_Price": 2605.000, "Cost_Savings_for_2019": 994.000, "cost_saving_for_2020": 745.500 },
-            { "Material_Number": 962022, "Material_Description": "SENSOR: TYP PHRANGE 0-14PH Mdl/Mach#:", "Unspsc_MaterialService_Group": "41111900", "Unspsc_Desc": "Indicat&record inst", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 7470, "col2019_Average_Price": 2490, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 6734.16, "col2020_Average_Price": 2244.72, "Total_Sum_of_PO_Converted_Qty": 6, "Total_Sum_of_PO_Line_Total_SAR": 14204.16, "Overall_Average_Price": 2367.36, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 735.84 },
-            { "Material_Number": 663691, "Material_Description": "VLV-GATE:TYP FLEXIBLE WEDGEVLV SZ 2IND", "Unspsc_MaterialService_Group": "40141613", "Unspsc_Desc": "Gate valves", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 7884, "col2019_Average_Price": 2628, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 1948, "col2020_Average_Price": 1948, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 9832, "Overall_Average_Price": 2458, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 680 },
-            { "Material_Number": 780085, "Material_Description": "CIRCUITPOWER SUPPLY:I/P 220VDC", "Unspsc_MaterialService_Group": "39121004", "Unspsc_Desc": "Power supply units", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 44840, "col2019_Average_Price": 11210, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 10555, "col2020_Average_Price": 10555, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 55395, "Overall_Average_Price": 11079, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 655 },
-            { "Material_Number": 483323, "Material_Description": "GSKTRJ:OVALAS ASTM A182 GR F11", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 2352, "col2019_Average_Price": 1176, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 1700, "col2020_Average_Price": 850, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 4052, "Overall_Average_Price": 1013, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 652 },
-            { "Material_Number": 6000020, "Material_Description": "PC-ORG:TRADE NAME METHYL ALCOHOLPACKAGI", "Unspsc_MaterialService_Group": "DM110207", "Unspsc_Desc": "Organic", "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 4752.000, "col2018_Average_Price": 396.000, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 3150.000, "col2019_Average_Price": 450.000, "Sum_of_PO_Converted_Qty": 6.000, "Sum_of_PO_Line_Total_SAR": 2100.000, "col2020_Average_Price": 350.000, "Total_Sum_of_PO_Converted_Qty": 25.000, "Total_Sum_of_PO_Line_Total_SAR": 10002.000, "Overall_Average_Price": 400.080, "Cost_Savings_for_2019": -378.000, "cost_saving_for_2020": 600.000 },
-            { "Material_Number": 7323274, "Material_Description": "BDG-IDNTFCTN:DSGNTN DEPUTY FIRE CHIEFSZ", "Unspsc_MaterialService_Group": "55121804", "Unspsc_Desc": "Badges/badge holders", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 6871.58, "col2019_Average_Price": 687.158, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 800, "col2020_Average_Price": 400, "Total_Sum_of_PO_Converted_Qty": 12, "Total_Sum_of_PO_Line_Total_SAR": 7671.58, "Overall_Average_Price": 639.298333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 574.316 },
-            { "Material_Number": 562874, "Material_Description": "ROLLER:MT AS DIN WN 1.7225", "Unspsc_MaterialService_Group": "22101505", "Unspsc_Desc": "Rollers(earthmov mc)", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 3937.500, "col2018_Average_Price": 3937.500, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 7875.000, "col2019_Average_Price": 3937.500, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 11250.000, "col2020_Average_Price": 3750.000, "Total_Sum_of_PO_Converted_Qty": 6.000, "Total_Sum_of_PO_Line_Total_SAR": 23062.500, "Overall_Average_Price": 3843.750, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 562.500 },
-            { "Material_Number": 853828, "Material_Description": "SEAL-OIL45MM55MM4MMNBR", "Unspsc_MaterialService_Group": "31181600", "Unspsc_Desc": "Seals", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 1196, "col2019_Average_Price": 119.6, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 60, "col2020_Average_Price": 12, "Total_Sum_of_PO_Converted_Qty": 15, "Total_Sum_of_PO_Line_Total_SAR": 1256, "Overall_Average_Price": 83.7333333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 538 },
-            { "Material_Number": 7074031, "Material_Description": "PIPE1IN6M80ASTM A53BSMLSPLAIN", "Unspsc_MaterialService_Group": "27112809", "Unspsc_Desc": "Tool holders", "Sum_of_PO_Converted_Qty": 59, "Sum_of_PO_Line_Total_SAR": 29785.500, "col2018_Average_Price": 504.839, "Sum_of_PO_Converted_Qty": 12.000, "Sum_of_PO_Line_Total_SAR": 3993.750, "col2019_Average_Price": 332.813, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 1792.000, "col2020_Average_Price": 256.000, "Total_Sum_of_PO_Converted_Qty": 78.000, "Total_Sum_of_PO_Line_Total_SAR": 35571.250, "Overall_Average_Price": 456.042, "Cost_Savings_for_2019": 2064.318, "cost_saving_for_2020": 537.688 },
-            { "Material_Number": 1547219, "Material_Description": "HOSE-AIR3/4IN17KSC AT 82 DEG C15MAIR", "Unspsc_MaterialService_Group": "40142002", "Unspsc_Desc": "Air hoses", "Sum_of_PO_Converted_Qty": 198, "Sum_of_PO_Line_Total_SAR": 68508.000, "col2018_Average_Price": 346.000, "Sum_of_PO_Converted_Qty": 249.000, "Sum_of_PO_Line_Total_SAR": 59938.000, "col2019_Average_Price": 240.715, "Sum_of_PO_Converted_Qty": 50.000, "Sum_of_PO_Line_Total_SAR": 11500.000, "col2020_Average_Price": 230.000, "Total_Sum_of_PO_Converted_Qty": 497.000, "Total_Sum_of_PO_Line_Total_SAR": 139946.000, "Overall_Average_Price": 281.581, "Cost_Savings_for_2019": 26216.000, "cost_saving_for_2020": 535.743 },
-            { "Material_Number": 1627054, "Material_Description": "KIT-ELECT-SYSTM-RPRCONSUMABLE PARTUPS.", "Unspsc_MaterialService_Group": "39121000", "Unspsc_Desc": "PowerCondition.Equip", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 1332, "col2019_Average_Price": 333, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 2132, "col2020_Average_Price": 266.5, "Total_Sum_of_PO_Converted_Qty": 12, "Total_Sum_of_PO_Line_Total_SAR": 3464, "Overall_Average_Price": 288.666666666667, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 532 },
-            { "Material_Number": 732924, "Material_Description": "CATALYST:TYP ST", "Unspsc_MaterialService_Group": "12161600", "Unspsc_Desc": "Catalysts", "Sum_of_PO_Converted_Qty": 17, "Sum_of_PO_Line_Total_SAR": 16150.000, "col2018_Average_Price": 950.000, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 2850.000, "col2019_Average_Price": 950.000, "Sum_of_PO_Converted_Qty": 5.000, "Sum_of_PO_Line_Total_SAR": 4220.000, "col2020_Average_Price": 844.000, "Total_Sum_of_PO_Converted_Qty": 25.000, "Total_Sum_of_PO_Line_Total_SAR": 23220.000, "Overall_Average_Price": 928.800, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 530.000 },
-            { "Material_Number": 278698, "Material_Description": "PLATEMETAL:", "Unspsc_MaterialService_Group": "30102504", "Unspsc_Desc": "Steel sheet", "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 6020.000, "col2018_Average_Price": 1505.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 6020.000, "col2019_Average_Price": 1505.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 2500.000, "col2020_Average_Price": 1250.000, "Total_Sum_of_PO_Converted_Qty": 10.000, "Total_Sum_of_PO_Line_Total_SAR": 14540.000, "Overall_Average_Price": 1454.000, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 510.000 },
-            { "Material_Number": 896338, "Material_Description": "PROXIMITOR:SCALE 200 MV/MIL (7.87 MV/mm)", "Unspsc_MaterialService_Group": "41111926", "Unspsc_Desc": "Proximity sensors", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 22281, "col2019_Average_Price": 2025.54545454545, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 9625, "col2020_Average_Price": 1925, "Total_Sum_of_PO_Converted_Qty": 16, "Total_Sum_of_PO_Line_Total_SAR": 31906, "Overall_Average_Price": 1994.125, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 502.72727272725 },
-            { "Material_Number": 7179552, "Material_Description": "CORDCOMMUNICATIONS:", "Unspsc_MaterialService_Group": "43191605", "Unspsc_Desc": "Phone handset cords", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3000, "Sum_of_PO_Line_Total_SAR": 42000, "col2019_Average_Price": 14, "Sum_of_PO_Converted_Qty": 1000, "Sum_of_PO_Line_Total_SAR": 13500, "col2020_Average_Price": 13.5, "Total_Sum_of_PO_Converted_Qty": 4000, "Total_Sum_of_PO_Line_Total_SAR": 55500, "Overall_Average_Price": 13.875, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 500 },
-            { "Material_Number": 7309790, "Material_Description": "TRNSFRMR:TYP HVVA RTNG 10VACURNT RTNG", "Unspsc_MaterialService_Group": "39121002", "Unspsc_Desc": "Powersupplytransfor", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 11174.500, "col2018_Average_Price": 11174.500, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 12695.500, "col2019_Average_Price": 12695.500, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 12219.800, "col2020_Average_Price": 12219.800, "Total_Sum_of_PO_Converted_Qty": 3.000, "Total_Sum_of_PO_Line_Total_SAR": 36089.800, "Overall_Average_Price": 12029.933, "Cost_Savings_for_2019": -1521.000, "cost_saving_for_2020": 475.700 },
-            { "Material_Number": 7075204, "Material_Description": "WRENCHADJUSTABLE:1-5/16INLG 10INMT", "Unspsc_MaterialService_Group": "27111707", "Unspsc_Desc": "Adjustable wrenches", "Sum_of_PO_Converted_Qty": 54, "Sum_of_PO_Line_Total_SAR": 4428.000, "col2018_Average_Price": 82.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 450.000, "col2019_Average_Price": 225.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 440.000, "col2020_Average_Price": 110.000, "Total_Sum_of_PO_Converted_Qty": 60.000, "Total_Sum_of_PO_Line_Total_SAR": 5318.000, "Overall_Average_Price": 88.633, "Cost_Savings_for_2019": -286.000, "cost_saving_for_2020": 460.000 },
-            { "Material_Number": 7175079, "Material_Description": "PAINT:TYP ENAMELCOLOR GREYSHADE 12170", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": 100, "Sum_of_PO_Line_Total_SAR": 2275.000, "col2018_Average_Price": 22.750, "Sum_of_PO_Converted_Qty": 80.000, "Sum_of_PO_Line_Total_SAR": 1645.600, "col2019_Average_Price": 20.570, "Sum_of_PO_Converted_Qty": 100.000, "Sum_of_PO_Line_Total_SAR": 1600.000, "col2020_Average_Price": 16.000, "Total_Sum_of_PO_Converted_Qty": 280.000, "Total_Sum_of_PO_Line_Total_SAR": 5520.600, "Overall_Average_Price": 19.716, "Cost_Savings_for_2019": 174.400, "cost_saving_for_2020": 457.000 },
-            { "Material_Number": 1596743, "Material_Description": "RGNT:TYP SULFURIC ACID 1.80N WITH 80MG/L", "Unspsc_MaterialService_Group": "12161500", "Unspsc_Desc": "Indicators&Reagents", "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 1400.000, "col2018_Average_Price": 700.000, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 4900.000, "col2019_Average_Price": 700.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 950.000, "col2020_Average_Price": 475.000, "Total_Sum_of_PO_Converted_Qty": 11.000, "Total_Sum_of_PO_Line_Total_SAR": 7250.000, "Overall_Average_Price": 659.091, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 450.000 },
-            { "Material_Number": 1624058, "Material_Description": "PRXMTR3300 (XL SENSOR)M:330780-91-05", "Unspsc_MaterialService_Group": "41111926", "Unspsc_Desc": "Proximity sensors", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 12682.68, "col2019_Average_Price": 4227.56, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 3779, "col2020_Average_Price": 3779, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 16461.68, "Overall_Average_Price": 4115.42, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 448.56 },
-            { "Material_Number": 40301, "Material_Description": "PROBE:TYP REVERSE MOUNT", "Unspsc_MaterialService_Group": "41111905", "Unspsc_Desc": "Electmeasuringprobes", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 2630, "col2019_Average_Price": 1315, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 3510, "col2020_Average_Price": 1170, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 6140, "Overall_Average_Price": 1228, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 435 },
-            { "Material_Number": 7323275, "Material_Description": "BDG-IDNTFCTN:DSGNTN FIRE SUPERVISORSZ W", "Unspsc_MaterialService_Group": "55121804", "Unspsc_Desc": "Badges/badge holders", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 25, "Sum_of_PO_Line_Total_SAR": 13947, "col2019_Average_Price": 557.88, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 1820, "col2020_Average_Price": 455, "Total_Sum_of_PO_Converted_Qty": 29, "Total_Sum_of_PO_Line_Total_SAR": 15767, "Overall_Average_Price": 543.689655172414, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 411.52 },
-            { "Material_Number": 212115, "Material_Description": "CYLINDERACTUATING LINEAR:", "Unspsc_MaterialService_Group": "31251511", "Unspsc_Desc": "Linear actuators", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 3640.000, "col2018_Average_Price": 3640.000, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 3640.000, "col2019_Average_Price": 3640.000, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 3230.000, "col2020_Average_Price": 3230.000, "Total_Sum_of_PO_Converted_Qty": 3.000, "Total_Sum_of_PO_Line_Total_SAR": 10510.000, "Overall_Average_Price": 3503.333, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 410.000 },
-            { "Material_Number": 316, "Material_Description": "SEALLABYRINTH:INLET GUIDE", "Unspsc_MaterialService_Group": "31181600", "Unspsc_Desc": "Seals", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 37436, "col2019_Average_Price": 18718, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 18327, "col2020_Average_Price": 18327, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 55763, "Overall_Average_Price": 18587.6666666667, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 391 },
-            { "Material_Number": 937950, "Material_Description": "INTERFACE:", "Unspsc_MaterialService_Group": "45111807", "Unspsc_Desc": "Interfaces", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 4433.6, "col2019_Average_Price": 1108.4, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 732, "col2020_Average_Price": 732, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 5165.6, "Overall_Average_Price": 1033.12, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 376.4 },
-            { "Material_Number": 466654, "Material_Description": "WASHERFLAT:CS ASTM A293 GR CID 13.5MM", "Unspsc_MaterialService_Group": "31161807", "Unspsc_Desc": "Flat washers", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 93, "col2019_Average_Price": 31, "Sum_of_PO_Converted_Qty": 53, "Sum_of_PO_Line_Total_SAR": 1272, "col2020_Average_Price": 24, "Total_Sum_of_PO_Converted_Qty": 56, "Total_Sum_of_PO_Line_Total_SAR": 1365, "Overall_Average_Price": 24.375, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 371 },
-            { "Material_Number": 131974, "Material_Description": "DEFLECTOR:MT RUBBER", "Unspsc_MaterialService_Group": "23153132", "Unspsc_Desc": "Dust deflectors", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 2610, "col2019_Average_Price": 237.272727272727, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 830, "col2020_Average_Price": 166, "Total_Sum_of_PO_Converted_Qty": 16, "Total_Sum_of_PO_Line_Total_SAR": 3440, "Overall_Average_Price": 215, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 356.363636363635 },
-            { "Material_Number": 776994, "Material_Description": "GSKT:ID 900 X OD 1145MMEXPANSION JOINT", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 171, "col2019_Average_Price": 171, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 1024, "col2020_Average_Price": 128, "Total_Sum_of_PO_Converted_Qty": 9, "Total_Sum_of_PO_Line_Total_SAR": 1195, "Overall_Average_Price": 132.777777777778, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 344 },
-            { "Material_Number": 7325382, "Material_Description": "KIT-INSTLTN:TYP CABLE CONNECTIONCMPRSNG", "Unspsc_MaterialService_Group": "31162800", "Unspsc_Desc": "Misc. hardware", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 752, "col2019_Average_Price": 94, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 223.2, "col2020_Average_Price": 37.2, "Total_Sum_of_PO_Converted_Qty": 14, "Total_Sum_of_PO_Line_Total_SAR": 975.2, "Overall_Average_Price": 69.6571428571429, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 340.8 },
-            { "Material_Number": 1019351, "Material_Description": "REAGENT: TYP AMMONIA 4 (R3)CTNR BOTTLE", "Unspsc_MaterialService_Group": "12161500", "Unspsc_Desc": "Indicators&Reagents", "Sum_of_PO_Converted_Qty": 15, "Sum_of_PO_Line_Total_SAR": 6750.000, "col2018_Average_Price": 450.000, "Sum_of_PO_Converted_Qty": 9.000, "Sum_of_PO_Line_Total_SAR": 2190.000, "col2019_Average_Price": 243.333, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 156.000, "col2020_Average_Price": 78.000, "Total_Sum_of_PO_Converted_Qty": 26.000, "Total_Sum_of_PO_Line_Total_SAR": 9096.000, "Overall_Average_Price": 349.846, "Cost_Savings_for_2019": 1860.000, "cost_saving_for_2020": 330.667 },
-            { "Material_Number": 725097, "Material_Description": "CYLINDER:TYP WHEEL", "Unspsc_MaterialService_Group": "24111800", "Unspsc_Desc": "Tanks&cyl&theiracces", "Sum_of_PO_Converted_Qty": 9, "Sum_of_PO_Line_Total_SAR": 4473.000, "col2018_Average_Price": 497.000, "Sum_of_PO_Converted_Qty": 5.000, "Sum_of_PO_Line_Total_SAR": 3210.000, "col2019_Average_Price": 642.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 2276.000, "col2020_Average_Price": 569.000, "Total_Sum_of_PO_Converted_Qty": 18.000, "Total_Sum_of_PO_Line_Total_SAR": 9959.000, "Overall_Average_Price": 553.278, "Cost_Savings_for_2019": -725.000, "cost_saving_for_2020": 292.000 },
-            { "Material_Number": 1073455, "Material_Description": "STUD CNTNS THD:TYP BOLTDIA 5/8INLG 200", "Unspsc_MaterialService_Group": "31161619", "Unspsc_Desc": "Stud bolts", "Sum_of_PO_Converted_Qty": 20, "Sum_of_PO_Line_Total_SAR": 1935.000, "col2018_Average_Price": 96.750, "Sum_of_PO_Converted_Qty": 40.000, "Sum_of_PO_Line_Total_SAR": 3870.000, "col2019_Average_Price": 96.750, "Sum_of_PO_Converted_Qty": 12.000, "Sum_of_PO_Line_Total_SAR": 870.000, "col2020_Average_Price": 72.500, "Total_Sum_of_PO_Converted_Qty": 72.000, "Total_Sum_of_PO_Line_Total_SAR": 6675.000, "Overall_Average_Price": 92.708, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 291.000 },
-            { "Material_Number": 7323276, "Material_Description": "BDG-IDNTFCTN:DSGNTN FIRE TECHNICIANSZ W", "Unspsc_MaterialService_Group": "55121804", "Unspsc_Desc": "Badges/badge holders", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 88, "Sum_of_PO_Line_Total_SAR": 30820, "col2019_Average_Price": 350.227272727273, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 2520, "col2020_Average_Price": 315, "Total_Sum_of_PO_Converted_Qty": 96, "Total_Sum_of_PO_Line_Total_SAR": 33340, "Overall_Average_Price": 347.291666666667, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 281.818181818184 },
-            { "Material_Number": 199898, "Material_Description": "PIPE:SZ 1-1/2INLG 6000MMSCHD 80CS", "Unspsc_MaterialService_Group": "27112809", "Unspsc_Desc": "Tool holders", "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 3300.000, "col2018_Average_Price": 300.000, "Sum_of_PO_Converted_Qty": 8.000, "Sum_of_PO_Line_Total_SAR": 2400.000, "col2019_Average_Price": 300.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 920.000, "col2020_Average_Price": 230.000, "Total_Sum_of_PO_Converted_Qty": 23.000, "Total_Sum_of_PO_Line_Total_SAR": 6620.000, "Overall_Average_Price": 287.826, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 280.000 },
-            { "Material_Number": 7247901, "Material_Description": "DRUMSTORAGE:TYP EMPTYSTYL HINGED COVER", "Unspsc_MaterialService_Group": "24112100", "Unspsc_Desc": "Casks&barrels&drums", "Sum_of_PO_Converted_Qty": 310, "Sum_of_PO_Line_Total_SAR": 27900.000, "col2018_Average_Price": 90.000, "Sum_of_PO_Converted_Qty": 155.000, "Sum_of_PO_Line_Total_SAR": 13950.000, "col2019_Average_Price": 90.000, "Sum_of_PO_Converted_Qty": 250.000, "Sum_of_PO_Line_Total_SAR": 22250.000, "col2020_Average_Price": 89.000, "Total_Sum_of_PO_Converted_Qty": 715.000, "Total_Sum_of_PO_Line_Total_SAR": 64100.000, "Overall_Average_Price": 89.650, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 250.000 },
-            { "Material_Number": 7053024, "Material_Description": "PLATEMETAL:", "Unspsc_MaterialService_Group": "30102504", "Unspsc_Desc": "Steel sheet", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 3800.000, "col2018_Average_Price": 3800.000, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 3740.000, "col2019_Average_Price": 534.286, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 840.000, "col2020_Average_Price": 420.000, "Total_Sum_of_PO_Converted_Qty": 10.000, "Total_Sum_of_PO_Line_Total_SAR": 8380.000, "Overall_Average_Price": 838.000, "Cost_Savings_for_2019": 22860.000, "cost_saving_for_2020": 228.571 },
-            { "Material_Number": 1019352, "Material_Description": "REAGENT: TYP OXALIC (R2)CTNR BOTTLE", "Unspsc_MaterialService_Group": "12161500", "Unspsc_Desc": "Indicators&Reagents", "Sum_of_PO_Converted_Qty": 16, "Sum_of_PO_Line_Total_SAR": 5920.000, "col2018_Average_Price": 370.000, "Sum_of_PO_Converted_Qty": 9.000, "Sum_of_PO_Line_Total_SAR": 2070.000, "col2019_Average_Price": 230.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 236.000, "col2020_Average_Price": 118.000, "Total_Sum_of_PO_Converted_Qty": 27.000, "Total_Sum_of_PO_Line_Total_SAR": 8226.000, "Overall_Average_Price": 304.667, "Cost_Savings_for_2019": 1260.000, "cost_saving_for_2020": 224.000 },
-            { "Material_Number": 1627022, "Material_Description": "KIT-ELECT-SYSTM-RPRCONSUMABLE PARTUPS.", "Unspsc_MaterialService_Group": "39121000", "Unspsc_Desc": "PowerCondition.Equip", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 666, "col2019_Average_Price": 333, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 1116, "col2020_Average_Price": 279, "Total_Sum_of_PO_Converted_Qty": 6, "Total_Sum_of_PO_Line_Total_SAR": 1782, "Overall_Average_Price": 297, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 216 },
-            { "Material_Number": 949811, "Material_Description": "O-RIG:MTRL VITONAPL HOUSING VAPOR SEAL", "Unspsc_MaterialService_Group": "31181506", "Unspsc_Desc": "O ring gaskets", "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 1522.000, "col2018_Average_Price": 380.500, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 2086.000, "col2019_Average_Price": 521.500, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 310.000, "col2020_Average_Price": 310.000, "Total_Sum_of_PO_Converted_Qty": 9.000, "Total_Sum_of_PO_Line_Total_SAR": 3918.000, "Overall_Average_Price": 435.333, "Cost_Savings_for_2019": -564.000, "cost_saving_for_2020": 211.500 },
-            { "Material_Number": 313505, "Material_Description": "PLATEMETAL:", "Unspsc_MaterialService_Group": "30102504", "Unspsc_Desc": "Steel sheet", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 488.265, "Sum_of_PO_Line_Total_SAR": 101328.28, "col2019_Average_Price": 207.527223946013, "Sum_of_PO_Converted_Qty": 150, "Sum_of_PO_Line_Total_SAR": 30923.49, "col2020_Average_Price": 206.1566, "Total_Sum_of_PO_Converted_Qty": 638.265, "Total_Sum_of_PO_Line_Total_SAR": 132251.77, "Overall_Average_Price": 207.205110729869, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 205.59359190195 },
-            { "Material_Number": 667058, "Material_Description": "BRGROLL:ID 75MMOD 130MMWD 25MM", "Unspsc_MaterialService_Group": "31171505", "Unspsc_Desc": "Roller bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 836, "col2019_Average_Price": 418, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 215, "col2020_Average_Price": 215, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 1051, "Overall_Average_Price": 350.333333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 203 },
-            { "Material_Number": 7323264, "Material_Description": "BDG-IDNTFCTN:DSGNTN FIRE MANAGERSZ WD 2", "Unspsc_MaterialService_Group": "55121804", "Unspsc_Desc": "Badges/badge holders", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 8, "Sum_of_PO_Line_Total_SAR": 4183.34, "col2019_Average_Price": 522.9175, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 320, "col2020_Average_Price": 320, "Total_Sum_of_PO_Converted_Qty": 9, "Total_Sum_of_PO_Line_Total_SAR": 4503.34, "Overall_Average_Price": 500.371111111111, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 202.9175 },
-            { "Material_Number": 7169918, "Material_Description": "PAINT: TYP ENAMEL ALKYDCOLR GREY", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": 35, "Sum_of_PO_Line_Total_SAR": 962.500, "col2018_Average_Price": 27.500, "Sum_of_PO_Converted_Qty": 100.000, "Sum_of_PO_Line_Total_SAR": 1900.000, "col2019_Average_Price": 19.000, "Sum_of_PO_Converted_Qty": 200.000, "Sum_of_PO_Line_Total_SAR": 3600.000, "col2020_Average_Price": 18.000, "Total_Sum_of_PO_Converted_Qty": 335.000, "Total_Sum_of_PO_Line_Total_SAR": 6462.500, "Overall_Average_Price": 19.291, "Cost_Savings_for_2019": 850.000, "cost_saving_for_2020": 200.000 },
-            { "Material_Number": 81043, "Material_Description": "KIT: TYP SEALANTP/N:EG513Mnfr:3M", "Unspsc_MaterialService_Group": "31162800", "Unspsc_Desc": "Misc. hardware", "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 4250.000, "col2018_Average_Price": 850.000, "Sum_of_PO_Converted_Qty": 5.000, "Sum_of_PO_Line_Total_SAR": 4050.000, "col2019_Average_Price": 810.000, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 2250.000, "col2020_Average_Price": 750.000, "Total_Sum_of_PO_Converted_Qty": 13.000, "Total_Sum_of_PO_Line_Total_SAR": 10550.000, "Overall_Average_Price": 811.538, "Cost_Savings_for_2019": 200.000, "cost_saving_for_2020": 180.000 },
-            { "Material_Number": 540250, "Material_Description": "BELTV:OC 1830MMTOP WD 13MMTHK 10MM", "Unspsc_MaterialService_Group": "26111801", "Unspsc_Desc": "V belts", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 45, "Sum_of_PO_Line_Total_SAR": 2160, "col2019_Average_Price": 48, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 108, "col2020_Average_Price": 18, "Total_Sum_of_PO_Converted_Qty": 51, "Total_Sum_of_PO_Line_Total_SAR": 2268, "Overall_Average_Price": 44.4705882352941, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 180 },
-            { "Material_Number": 7126548, "Material_Description": "PNT:TYP ENAMEL ALKYDCLR YELLOWFNSH GLO", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": 475, "Sum_of_PO_Line_Total_SAR": 10487.500, "col2018_Average_Price": 22.079, "Sum_of_PO_Converted_Qty": 150.000, "Sum_of_PO_Line_Total_SAR": 3375.000, "col2019_Average_Price": 22.500, "Sum_of_PO_Converted_Qty": 320.000, "Sum_of_PO_Line_Total_SAR": 7040.000, "col2020_Average_Price": 22.000, "Total_Sum_of_PO_Converted_Qty": 945.000, "Total_Sum_of_PO_Line_Total_SAR": 20902.500, "Overall_Average_Price": 22.119, "Cost_Savings_for_2019": -63.158, "cost_saving_for_2020": 160.000 },
-            { "Material_Number": 7162297, "Material_Description": "VALVEGLOBE:VLV SZ 1-1/2INDES RTG 800LB", "Unspsc_MaterialService_Group": "40141611", "Unspsc_Desc": "Globe valves", "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 1858.500, "col2018_Average_Price": 929.250, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 1320.000, "col2019_Average_Price": 440.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 734.000, "col2020_Average_Price": 367.000, "Total_Sum_of_PO_Converted_Qty": 7.000, "Total_Sum_of_PO_Line_Total_SAR": 3912.500, "Overall_Average_Price": 558.929, "Cost_Savings_for_2019": 1467.750, "cost_saving_for_2020": 146.000 },
-            { "Material_Number": 768595, "Material_Description": "FILTER:WATERFUEL SEPARATOR", "Unspsc_MaterialService_Group": "40161500", "Unspsc_Desc": "Filters (generic)", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 82, "Sum_of_PO_Line_Total_SAR": 14542.82, "col2019_Average_Price": 177.351463414634, "Sum_of_PO_Converted_Qty": 44, "Sum_of_PO_Line_Total_SAR": 7667, "col2020_Average_Price": 174.25, "Total_Sum_of_PO_Converted_Qty": 126, "Total_Sum_of_PO_Line_Total_SAR": 22209.82, "Overall_Average_Price": 176.268412698413, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 136.464390243896 },
-            { "Material_Number": 1065290, "Material_Description": "FILTER OIL: TYP HYDRAULICP/N:222-6713", "Unspsc_MaterialService_Group": "40161504", "Unspsc_Desc": "Oil filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 7, "Sum_of_PO_Line_Total_SAR": 4072.74, "col2019_Average_Price": 581.82, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 3358.38, "col2020_Average_Price": 559.73, "Total_Sum_of_PO_Converted_Qty": 13, "Total_Sum_of_PO_Line_Total_SAR": 7431.12, "Overall_Average_Price": 571.624615384615, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 132.54 },
-            { "Material_Number": 7125776, "Material_Description": "SOLUTION:TYP BUFFER pH 7.00 @20 DEG C", "Unspsc_MaterialService_Group": "41116105", "Unspsc_Desc": "ChemistryReagnt/Soln", "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 1000.000, "col2018_Average_Price": 100.000, "Sum_of_PO_Converted_Qty": 12.000, "Sum_of_PO_Line_Total_SAR": 1050.000, "col2019_Average_Price": 87.500, "Sum_of_PO_Converted_Qty": 10.000, "Sum_of_PO_Line_Total_SAR": 750.000, "col2020_Average_Price": 75.000, "Total_Sum_of_PO_Converted_Qty": 32.000, "Total_Sum_of_PO_Line_Total_SAR": 2800.000, "Overall_Average_Price": 87.500, "Cost_Savings_for_2019": 150.000, "cost_saving_for_2020": 125.000 },
-            { "Material_Number": 1253182, "Material_Description": "GLOVES:TYP HYFLEX X MULTI-PURPOSE X KNIT", "Unspsc_MaterialService_Group": "46181504", "Unspsc_Desc": "Protective gloves", "Sum_of_PO_Converted_Qty": 315, "Sum_of_PO_Line_Total_SAR": 2992.500, "col2018_Average_Price": 9.500, "Sum_of_PO_Converted_Qty": 882.000, "Sum_of_PO_Line_Total_SAR": 6195.000, "col2019_Average_Price": 7.024, "Sum_of_PO_Converted_Qty": 200.000, "Sum_of_PO_Line_Total_SAR": 1300.000, "col2020_Average_Price": 6.500, "Total_Sum_of_PO_Converted_Qty": 1397.000, "Total_Sum_of_PO_Line_Total_SAR": 10487.500, "Overall_Average_Price": 7.507, "Cost_Savings_for_2019": 2184.000, "cost_saving_for_2020": 104.762 },
-            { "Material_Number": 697590, "Material_Description": "O-RING:ID 15.54MMWD 2.62MMMT NBR", "Unspsc_MaterialService_Group": "31181506", "Unspsc_Desc": "O ring gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 40, "col2019_Average_Price": 10, "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 11, "col2020_Average_Price": 1, "Total_Sum_of_PO_Converted_Qty": 15, "Total_Sum_of_PO_Line_Total_SAR": 51, "Overall_Average_Price": 3.4, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 99 },
-            { "Material_Number": 1062415, "Material_Description": "HOSE:SZ LG 100 FT (30.5 M)RTNG 300PSIM", "Unspsc_MaterialService_Group": "40142000", "Unspsc_Desc": "Hoses", "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 4632.000, "col2018_Average_Price": 386.000, "Sum_of_PO_Converted_Qty": 66.000, "Sum_of_PO_Line_Total_SAR": 20325.000, "col2019_Average_Price": 307.955, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 1140.000, "col2020_Average_Price": 285.000, "Total_Sum_of_PO_Converted_Qty": 82.000, "Total_Sum_of_PO_Line_Total_SAR": 26097.000, "Overall_Average_Price": 318.256, "Cost_Savings_for_2019": 5151.000, "cost_saving_for_2020": 91.818 },
-            { "Material_Number": 11755, "Material_Description": "UNIONTUBE:SZ 1/4INCONN COMPRESSION.", "Unspsc_MaterialService_Group": "40183103", "Unspsc_Desc": "Tube union", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 20, "Sum_of_PO_Line_Total_SAR": 600, "col2019_Average_Price": 30, "Sum_of_PO_Converted_Qty": 50, "Sum_of_PO_Line_Total_SAR": 1425, "col2020_Average_Price": 28.5, "Total_Sum_of_PO_Converted_Qty": 70, "Total_Sum_of_PO_Line_Total_SAR": 2025, "Overall_Average_Price": 28.9285714285714, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 75 },
-            { "Material_Number": 1624026, "Material_Description": "PRBVIBRATION PROXIMITY300XL 11MM11M", "Unspsc_MaterialService_Group": "41111905", "Unspsc_Desc": "Electmeasuringprobes", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 9031.92, "col2019_Average_Price": 3010.64, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 2937, "col2020_Average_Price": 2937, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 11968.92, "Overall_Average_Price": 2992.23, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 73.64 },
-            { "Material_Number": 314352, "Material_Description": "GASKET FLAT DIN 2690  DN0065 PN40  PSM", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 300, "Sum_of_PO_Line_Total_SAR": 1350, "col2019_Average_Price": 4.5, "Sum_of_PO_Converted_Qty": 200, "Sum_of_PO_Line_Total_SAR": 828, "col2020_Average_Price": 4.14, "Total_Sum_of_PO_Converted_Qty": 500, "Total_Sum_of_PO_Line_Total_SAR": 2178, "Overall_Average_Price": 4.356, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 72 },
-            { "Material_Number": 451733, "Material_Description": "RAINWEAR:TYP HEAVY DUTY RAINCOATSZ XL", "Unspsc_MaterialService_Group": "46181500", "Unspsc_Desc": "Safety apparel", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 560, "Sum_of_PO_Line_Total_SAR": 14050, "col2019_Average_Price": 25.0892857142857, "Sum_of_PO_Converted_Qty": 780, "Sum_of_PO_Line_Total_SAR": 19500, "col2020_Average_Price": 25, "Total_Sum_of_PO_Converted_Qty": 1340, "Total_Sum_of_PO_Line_Total_SAR": 33550, "Overall_Average_Price": 25.0373134328358, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 69.642857142846 },
-            { "Material_Number": 792008, "Material_Description": "MODULE:APPL VIBRATION FORK LEVEL SWITCH", "Unspsc_MaterialService_Group": "39121543", "Unspsc_Desc": "Relay boards/modules", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 3692.65, "col2019_Average_Price": 1846.325, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 1782.66, "col2020_Average_Price": 1782.66, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 5475.31, "Overall_Average_Price": 1825.10333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 63.665 },
-            { "Material_Number": 339445, "Material_Description": "HOSEHYD: INSIDE DIAMETER 28.4MM", "Unspsc_MaterialService_Group": "40142000", "Unspsc_Desc": "Hoses", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 2900, "col2019_Average_Price": 290, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 1100, "col2020_Average_Price": 275, "Total_Sum_of_PO_Converted_Qty": 14, "Total_Sum_of_PO_Line_Total_SAR": 4000, "Overall_Average_Price": 285.714285714286, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 60 },
-            { "Material_Number": 7126542, "Material_Description": "PNTENAMEL ALKYDWHITE5LGLOSSY", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 200, "col2019_Average_Price": 20, "Sum_of_PO_Converted_Qty": 30, "Sum_of_PO_Line_Total_SAR": 540, "col2020_Average_Price": 18, "Total_Sum_of_PO_Converted_Qty": 40, "Total_Sum_of_PO_Line_Total_SAR": 740, "Overall_Average_Price": 18.5, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 60 },
-            { "Material_Number": 7230901, "Material_Description": "CARTRIDGE:TYP MAKE-UPAPPLN FOR LOGO MAR", "Unspsc_MaterialService_Group": "41105308", "Unspsc_Desc": "Capillarie/cartridge", "Sum_of_PO_Converted_Qty": 222, "Sum_of_PO_Line_Total_SAR": 44094.000, "col2018_Average_Price": 198.622, "Sum_of_PO_Converted_Qty": 232.000, "Sum_of_PO_Line_Total_SAR": 46112.000, "col2019_Average_Price": 198.759, "Sum_of_PO_Converted_Qty": 32.000, "Sum_of_PO_Line_Total_SAR": 6304.000, "col2020_Average_Price": 197.000, "Total_Sum_of_PO_Converted_Qty": 486.000, "Total_Sum_of_PO_Line_Total_SAR": 96510.000, "Overall_Average_Price": 198.580, "Cost_Savings_for_2019": -31.784, "cost_saving_for_2020": 56.276 },
-            { "Material_Number": 7126546, "Material_Description": "PAINT:TYP ENAMELCOLOR BLUE", "Unspsc_MaterialService_Group": "31211504", "Unspsc_Desc": "Coating paints", "Sum_of_PO_Converted_Qty": 375, "Sum_of_PO_Line_Total_SAR": 8250.000, "col2018_Average_Price": 22.000, "Sum_of_PO_Converted_Qty": 790.000, "Sum_of_PO_Line_Total_SAR": 16990.000, "col2019_Average_Price": 21.506, "Sum_of_PO_Converted_Qty": 110.000, "Sum_of_PO_Line_Total_SAR": 2310.000, "col2020_Average_Price": 21.000, "Total_Sum_of_PO_Converted_Qty": 1275.000, "Total_Sum_of_PO_Line_Total_SAR": 27550.000, "Overall_Average_Price": 21.608, "Cost_Savings_for_2019": 390.000, "cost_saving_for_2020": 55.696 },
-            { "Material_Number": 786497, "Material_Description": "FILTERELEMENT:PAPER/RUBBEROIL", "Unspsc_MaterialService_Group": "40161500", "Unspsc_Desc": "Filters (generic)", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 2222.31, "col2019_Average_Price": 370.385, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 2167.5, "col2020_Average_Price": 361.25, "Total_Sum_of_PO_Converted_Qty": 12, "Total_Sum_of_PO_Line_Total_SAR": 4389.81, "Overall_Average_Price": 365.8175, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 54.81 },
-            { "Material_Number": 7054359, "Material_Description": "VALVEBALL:VLV SZ 3/4INDES RTG 400LB", "Unspsc_MaterialService_Group": "40141607", "Unspsc_Desc": "Ball valves", "Sum_of_PO_Converted_Qty": 36, "Sum_of_PO_Line_Total_SAR": 1546.000, "col2018_Average_Price": 42.944, "Sum_of_PO_Converted_Qty": 115.000, "Sum_of_PO_Line_Total_SAR": 4755.000, "col2019_Average_Price": 41.348, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 116.000, "col2020_Average_Price": 29.000, "Total_Sum_of_PO_Converted_Qty": 155.000, "Total_Sum_of_PO_Line_Total_SAR": 6417.000, "Overall_Average_Price": 41.400, "Cost_Savings_for_2019": 183.611, "cost_saving_for_2020": 49.391 },
-            { "Material_Number": 54030, "Material_Description": "GSKTRJ:OCTAGONALR-24SOFT IRON2IN", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 108, "col2019_Average_Price": 27, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 60, "col2020_Average_Price": 15, "Total_Sum_of_PO_Converted_Qty": 8, "Total_Sum_of_PO_Line_Total_SAR": 168, "Overall_Average_Price": 21, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 48 },
-            { "Material_Number": 1597658, "Material_Description": "BAR-RUND:SZ 3.5INLG 1MMTRL TITANIUM AS", "Unspsc_MaterialService_Group": "30101600", "Unspsc_Desc": "Bar (unspecified)", "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 19996.000, "col2018_Average_Price": 4999.000, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 4999.000, "col2019_Average_Price": 4999.000, "Sum_of_PO_Converted_Qty": 5.000, "Sum_of_PO_Line_Total_SAR": 24950.000, "col2020_Average_Price": 4990.000, "Total_Sum_of_PO_Converted_Qty": 10.000, "Total_Sum_of_PO_Line_Total_SAR": 49945.000, "Overall_Average_Price": 4994.500, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 45.000 },
-            { "Material_Number": 836267, "Material_Description": "ASSEMBLY:TYP SEAT RINGAPPL CONTROL VALV", "Unspsc_MaterialService_Group": "23153402", "Unspsc_Desc": "Assembly fixtures", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 9332, "col2019_Average_Price": 1555.33333333333, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 3066, "col2020_Average_Price": 1533, "Total_Sum_of_PO_Converted_Qty": 8, "Total_Sum_of_PO_Line_Total_SAR": 12398, "Overall_Average_Price": 1549.75, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 44.66666666666 },
-            { "Material_Number": 758202, "Material_Description": "OIL:TYP HYDRAULICCTNR DRUM 209 OR 208L", "Unspsc_MaterialService_Group": "12181600", "Unspsc_Desc": "Oils", "Sum_of_PO_Converted_Qty": 11913, "Sum_of_PO_Line_Total_SAR": 71250.000, "col2018_Average_Price": 5.981, "Sum_of_PO_Converted_Qty": 12983.000, "Sum_of_PO_Line_Total_SAR": 77902.600, "col2019_Average_Price": 6.000, "Sum_of_PO_Converted_Qty": 2090.000, "Sum_of_PO_Line_Total_SAR": 12500.000, "col2020_Average_Price": 5.981, "Total_Sum_of_PO_Converted_Qty": 26986.000, "Total_Sum_of_PO_Line_Total_SAR": 161652.600, "Overall_Average_Price": 5.990, "Cost_Savings_for_2019": -253.078, "cost_saving_for_2020": 40.741 },
-            { "Material_Number": 272440, "Material_Description": "BRG:TYP BALL BEARINGMTRL BEARING STEEL", "Unspsc_MaterialService_Group": "31171500", "Unspsc_Desc": "Bearing generic", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 2141.88, "col2019_Average_Price": 535.47, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 495, "col2020_Average_Price": 495, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 2636.88, "Overall_Average_Price": 527.376, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 40.47 },
-            { "Material_Number": 322021, "Material_Description": "HOSEHYD: NOMINAL DIAMETER 2MM", "Unspsc_MaterialService_Group": "40142000", "Unspsc_Desc": "Hoses", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 28, "Sum_of_PO_Line_Total_SAR": 1480, "col2019_Average_Price": 52.8571428571429, "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 600, "col2020_Average_Price": 50, "Total_Sum_of_PO_Converted_Qty": 40, "Total_Sum_of_PO_Line_Total_SAR": 2080, "Overall_Average_Price": 52, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 34.2857142857148 },
-            { "Material_Number": 7192987, "Material_Description": "PIPE: SIZE 8INLENGTH 6000MMSCHD 40.", "Unspsc_MaterialService_Group": "27112809", "Unspsc_Desc": "Tool holders", "Sum_of_PO_Converted_Qty": 15, "Sum_of_PO_Line_Total_SAR": 19350.000, "col2018_Average_Price": 1290.000, "Sum_of_PO_Converted_Qty": 106.000, "Sum_of_PO_Line_Total_SAR": 164508.000, "col2019_Average_Price": 1551.962, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 1518.000, "col2020_Average_Price": 1518.000, "Total_Sum_of_PO_Converted_Qty": 122.000, "Total_Sum_of_PO_Line_Total_SAR": 185376.000, "Overall_Average_Price": 1519.475, "Cost_Savings_for_2019": -27768.000, "cost_saving_for_2020": 33.962 },
-            { "Material_Number": 1052340, "Material_Description": "FILTERELEMENT:TYP CARTRIDGE/WATERSIZE", "Unspsc_MaterialService_Group": "40161500", "Unspsc_Desc": "Filters (generic)", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 700.000, "col2018_Average_Price": 700.000, "Sum_of_PO_Converted_Qty": 7.000, "Sum_of_PO_Line_Total_SAR": 5100.000, "col2019_Average_Price": 728.571, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 700.000, "col2020_Average_Price": 700.000, "Total_Sum_of_PO_Converted_Qty": 9.000, "Total_Sum_of_PO_Line_Total_SAR": 6500.000, "Overall_Average_Price": 722.222, "Cost_Savings_for_2019": -200.000, "cost_saving_for_2020": 28.571 },
-            { "Material_Number": 919895, "Material_Description": "FILTEROIL:APLC WHEEL LOADER", "Unspsc_MaterialService_Group": "40161504", "Unspsc_Desc": "Oil filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 28, "Sum_of_PO_Line_Total_SAR": 12071.31, "col2019_Average_Price": 431.118214285714, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 1266.09, "col2020_Average_Price": 422.03, "Total_Sum_of_PO_Converted_Qty": 31, "Total_Sum_of_PO_Line_Total_SAR": 13337.4, "Overall_Average_Price": 430.238709677419, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 27.264642857142 },
-            { "Material_Number": 572414, "Material_Description": "SEAL:C", "Unspsc_MaterialService_Group": "31181600", "Unspsc_Desc": "Seals", "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 4000.000, "col2018_Average_Price": 4000.000, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 12530.000, "col2019_Average_Price": 4176.667, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 4150.000, "col2020_Average_Price": 4150.000, "Total_Sum_of_PO_Converted_Qty": 5.000, "Total_Sum_of_PO_Line_Total_SAR": 20680.000, "Overall_Average_Price": 4136.000, "Cost_Savings_for_2019": -530.000, "cost_saving_for_2020": 26.667 },
-            { "Material_Number": 7249948, "Material_Description": "PIPE:SIZE 8INLENGTH 6MSCHD STDMATL CS", "Unspsc_MaterialService_Group": "27112809", "Unspsc_Desc": "Tool holders", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 899, "col2019_Average_Price": 899, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 1778, "col2020_Average_Price": 889, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 2677, "Overall_Average_Price": 892.333333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 20 },
-            { "Material_Number": 1048060, "Material_Description": "FLTR-AIR:TYP PRIMARYEFC STANDARDAPL DU", "Unspsc_MaterialService_Group": "40161505", "Unspsc_Desc": "Air filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 13, "Sum_of_PO_Line_Total_SAR": 8280.33, "col2019_Average_Price": 636.948461538462, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 1894.65, "col2020_Average_Price": 631.55, "Total_Sum_of_PO_Converted_Qty": 16, "Total_Sum_of_PO_Line_Total_SAR": 10174.98, "Overall_Average_Price": 635.93625, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 16.195384615386 },
-            { "Material_Number": 7327074, "Material_Description": "KIT-VLV-RPRTRIM AND SOFT GOODS", "Unspsc_MaterialService_Group": "40141636", "Unspsc_Desc": "Valve kits", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 860, "col2019_Average_Price": 430, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 415, "col2020_Average_Price": 415, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 1275, "Overall_Average_Price": 425, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 15 },
-            { "Material_Number": 168651, "Material_Description": "BARROUND:SZ 16MMLG 3M", "Unspsc_MaterialService_Group": "30101600", "Unspsc_Desc": "Bar (unspecified)", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 24, "col2019_Average_Price": 24, "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 276, "col2020_Average_Price": 23, "Total_Sum_of_PO_Converted_Qty": 13, "Total_Sum_of_PO_Line_Total_SAR": 300, "Overall_Average_Price": 23.0769230769231, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 12 },
-            { "Material_Number": 919226, "Material_Description": "ASSEMBLY:PINION SHAFT HEAD BEARING", "Unspsc_MaterialService_Group": "23153402", "Unspsc_Desc": "Assembly fixtures", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 7, "Sum_of_PO_Line_Total_SAR": 8490, "col2019_Average_Price": 1212.85714285714, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 4840, "col2020_Average_Price": 1210, "Total_Sum_of_PO_Converted_Qty": 11, "Total_Sum_of_PO_Line_Total_SAR": 13330, "Overall_Average_Price": 1211.81818181818, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 11.42857142856 },
-            { "Material_Number": 746059, "Material_Description": "BRG BALL: IBI 12461WIDTH 17MMMNFR:SKF", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 80, "col2019_Average_Price": 40, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 229.08, "col2020_Average_Price": 38.18, "Total_Sum_of_PO_Converted_Qty": 8, "Total_Sum_of_PO_Line_Total_SAR": 309.08, "Overall_Average_Price": 38.635, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 10.92 },
-            { "Material_Number": 32627, "Material_Description": "SEALOIL:ID 55MMOD 72MMWD 8MM", "Unspsc_MaterialService_Group": "31181600", "Unspsc_Desc": "Seals", "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 315.000, "col2018_Average_Price": 105.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 210.000, "col2019_Average_Price": 105.000, "Sum_of_PO_Converted_Qty": 2.000, "Sum_of_PO_Line_Total_SAR": 200.000, "col2020_Average_Price": 100.000, "Total_Sum_of_PO_Converted_Qty": 7.000, "Total_Sum_of_PO_Line_Total_SAR": 725.000, "Overall_Average_Price": 103.571, "Cost_Savings_for_2019": 0.000, "cost_saving_for_2020": 10.000 },
-            { "Material_Number": 300823, "Material_Description": "BRGBALL:IBI 12890INSIDE DIAMETER 40MM", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 29, "Sum_of_PO_Line_Total_SAR": 1032.84, "col2019_Average_Price": 35.6151724137931, "Sum_of_PO_Converted_Qty": 16, "Sum_of_PO_Line_Total_SAR": 560, "col2020_Average_Price": 35, "Total_Sum_of_PO_Converted_Qty": 45, "Total_Sum_of_PO_Line_Total_SAR": 1592.84, "Overall_Average_Price": 35.3964444444444, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 9.8427586206896 },
-            { "Material_Number": 1036258, "Material_Description": "FILTER OIL: APPL POWER TRAIN", "Unspsc_MaterialService_Group": "40161504", "Unspsc_Desc": "Oil filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 16, "Sum_of_PO_Line_Total_SAR": 5806.29, "col2019_Average_Price": 362.893125, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 354.45, "col2020_Average_Price": 354.45, "Total_Sum_of_PO_Converted_Qty": 17, "Total_Sum_of_PO_Line_Total_SAR": 6160.74, "Overall_Average_Price": 362.396470588235, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 8.443125 },
-            { "Material_Number": 1016816, "Material_Description": "FILTER: TYP WATER SEPARATORP/N:326-1644", "Unspsc_MaterialService_Group": "40161500", "Unspsc_Desc": "Filters (generic)", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 16, "Sum_of_PO_Line_Total_SAR": 2852.2, "col2019_Average_Price": 178.2625, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 348.5, "col2020_Average_Price": 174.25, "Total_Sum_of_PO_Converted_Qty": 18, "Total_Sum_of_PO_Line_Total_SAR": 3200.7, "Overall_Average_Price": 177.816666666667, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 8.025 },
-            { "Material_Number": 1036257, "Material_Description": "SEPARATOR: TYP WATER/FUELP/N:326-1643", "Unspsc_MaterialService_Group": "40161700", "Unspsc_Desc": "Separators", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 2648.74, "col2019_Average_Price": 220.728333333333, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 212.93, "col2020_Average_Price": 212.93, "Total_Sum_of_PO_Converted_Qty": 13, "Total_Sum_of_PO_Line_Total_SAR": 2861.67, "Overall_Average_Price": 220.128461538462, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 7.798333333333 },
-            { "Material_Number": 7237260, "Material_Description": "UN-TUBE:SZ UNIVERSAL PRESS FITP/N:5190-", "Unspsc_MaterialService_Group": "40183103", "Unspsc_Desc": "Tube union", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 1169.3, "col2019_Average_Price": 584.65, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 577.94, "col2020_Average_Price": 577.94, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 1747.24, "Overall_Average_Price": 582.413333333333, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 6.71 },
-            { "Material_Number": 380435, "Material_Description": "FLTR-AIR:TYP PANELEFC STANDARDSHP RECT", "Unspsc_MaterialService_Group": "40161505", "Unspsc_Desc": "Air filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 19, "Sum_of_PO_Line_Total_SAR": 3608.73, "col2019_Average_Price": 189.933157894737, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 754.8, "col2020_Average_Price": 188.7, "Total_Sum_of_PO_Converted_Qty": 23, "Total_Sum_of_PO_Line_Total_SAR": 4363.53, "Overall_Average_Price": 189.718695652174, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 4.932631578948 },
-            { "Material_Number": 68165, "Material_Description": "BRGBALL:IBI 13824ID 55MMOD 120MM", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 25, "Sum_of_PO_Line_Total_SAR": 2754.15, "col2019_Average_Price": 110.166, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 327.15, "col2020_Average_Price": 109.05, "Total_Sum_of_PO_Converted_Qty": 28, "Total_Sum_of_PO_Line_Total_SAR": 3081.3, "Overall_Average_Price": 110.046428571429, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 3.348 },
-            { "Material_Number": 979554, "Material_Description": "SEAL RING: INSIDE DIAMETER 188MM", "Unspsc_MaterialService_Group": "31181600", "Unspsc_Desc": "Seals", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 942, "col2019_Average_Price": 314, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 311, "col2020_Average_Price": 311, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 1253, "Overall_Average_Price": 313.25, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 3 },
-            { "Material_Number": 331150, "Material_Description": "BRGBALL:IBI 12535INSIDE DIAMETER 35MM", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 14, "Sum_of_PO_Line_Total_SAR": 331.9, "col2019_Average_Price": 23.7071428571429, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 68.85, "col2020_Average_Price": 22.95, "Total_Sum_of_PO_Converted_Qty": 17, "Total_Sum_of_PO_Line_Total_SAR": 400.75, "Overall_Average_Price": 23.5735294117647, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 2.2714285714287 },
-            { "Material_Number": 1032346, "Material_Description": "FILTER OIL: P/N:220-1523 Equip Mdl#:", "Unspsc_MaterialService_Group": "40161504", "Unspsc_Desc": "Oil filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 7, "Sum_of_PO_Line_Total_SAR": 351.51, "col2019_Average_Price": 50.2157142857143, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 48.45, "col2020_Average_Price": 48.45, "Total_Sum_of_PO_Converted_Qty": 8, "Total_Sum_of_PO_Line_Total_SAR": 399.96, "Overall_Average_Price": 49.995, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1.7657142857143 },
-            { "Material_Number": 1036214, "Material_Description": "FILTER FUEL: P/N:1R-0762 Equip Mdl#:", "Unspsc_MaterialService_Group": "40161513", "Unspsc_Desc": "Fuel filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 29, "Sum_of_PO_Line_Total_SAR": 4243.3, "col2019_Average_Price": 146.320689655172, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 437.34, "col2020_Average_Price": 145.78, "Total_Sum_of_PO_Converted_Qty": 32, "Total_Sum_of_PO_Line_Total_SAR": 4680.64, "Overall_Average_Price": 146.27, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1.622068965516 },
-            { "Material_Number": 1222375, "Material_Description": "FILTER:APPLN FUEL FILTERELEMENT DVANCE E", "Unspsc_MaterialService_Group": "40161500", "Unspsc_Desc": "Filters (generic)", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 223.13, "col2019_Average_Price": 111.565, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 221.86, "col2020_Average_Price": 110.93, "Total_Sum_of_PO_Converted_Qty": 4, "Total_Sum_of_PO_Line_Total_SAR": 444.99, "Overall_Average_Price": 111.2475, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1.27 },
-            { "Material_Number": 7276920, "Material_Description": "HEAT TRANSFER FLUID:TEMP RNGE MAX 345DEG", "Unspsc_MaterialService_Group": "12350000", "Unspsc_Desc": "Compounds & Mixtures", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 41600, "Sum_of_PO_Line_Total_SAR": 1326210, "col2019_Average_Price": 31.8800480769231, "Sum_of_PO_Converted_Qty": 20800, "Sum_of_PO_Line_Total_SAR": 663104, "col2020_Average_Price": 31.88, "Total_Sum_of_PO_Converted_Qty": 62400, "Total_Sum_of_PO_Line_Total_SAR": 1989314, "Overall_Average_Price": 31.8800320512821, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 1.00000000048 },
-            { "Material_Number": 784662, "Material_Description": "BOOSTERAIR:SUPPLY 150PSIG", "Unspsc_MaterialService_Group": "46131600", "Unspsc_Desc": "Boosters", "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 10068.000, "col2018_Average_Price": 3356.000, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 3432.000, "col2019_Average_Price": 3432.000, "Sum_of_PO_Converted_Qty": 1.000, "Sum_of_PO_Line_Total_SAR": 3431.000, "col2020_Average_Price": 3431.000, "Total_Sum_of_PO_Converted_Qty": 5.000, "Total_Sum_of_PO_Line_Total_SAR": 16931.000, "Overall_Average_Price": 3386.200, "Cost_Savings_for_2019": -76.000, "cost_saving_for_2020": 1.000 },
-            { "Material_Number": 7100701, "Material_Description": "BATTERY DRY CELL: TYP LITHIUMSIZE C.", "Unspsc_MaterialService_Group": "26111705", "Unspsc_Desc": "Dry cell batteries", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 5, "Sum_of_PO_Line_Total_SAR": 10148.5, "col2019_Average_Price": 2029.7, "Sum_of_PO_Converted_Qty": 28, "Sum_of_PO_Line_Total_SAR": 56831.32, "col2020_Average_Price": 2029.69, "Total_Sum_of_PO_Converted_Qty": 33, "Total_Sum_of_PO_Line_Total_SAR": 66979.82, "Overall_Average_Price": 2029.69151515152, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0.28 },
-            { "Material_Number": 735233, "Material_Description": "COUPLING:STEELCLUTCH", "Unspsc_MaterialService_Group": "31163013", "Unspsc_Desc": "COUPLING SHAFT", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 4, "Sum_of_PO_Line_Total_SAR": 24448.26, "col2019_Average_Price": 6112.065, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 6112, "col2020_Average_Price": 6112, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 30560.26, "Overall_Average_Price": 6112.052, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0.065 },
-            { "Material_Number": 7316878, "Material_Description": "CHMCL-ANTFULNT:TRD NM FORTIS EC3362ACMP", "Unspsc_MaterialService_Group": "47101600", "Unspsc_Desc": "Water treat. Consum.", "Sum_of_PO_Converted_Qty": 3000, "Sum_of_PO_Line_Total_SAR": 45360.000, "col2018_Average_Price": 15.120, "Sum_of_PO_Converted_Qty": 20070.000, "Sum_of_PO_Line_Total_SAR": 303458.000, "col2019_Average_Price": 15.120, "Sum_of_PO_Converted_Qty": 7035.000, "Sum_of_PO_Line_Total_SAR": 106369.000, "col2020_Average_Price": 15.120, "Total_Sum_of_PO_Converted_Qty": 30105.000, "Total_Sum_of_PO_Line_Total_SAR": 455187.000, "Overall_Average_Price": 15.120, "Cost_Savings_for_2019": 0.400, "cost_saving_for_2020": 0.060 },
-            { "Material_Number": 744522, "Material_Description": "BRGROLL: INSIDE DIAMETER 100MM", "Unspsc_MaterialService_Group": "31171505", "Unspsc_Desc": "Roller bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 13047.5, "col2019_Average_Price": 1087.29166666667, "Sum_of_PO_Converted_Qty": 19, "Sum_of_PO_Line_Total_SAR": 20658.49, "col2020_Average_Price": 1087.28894736842, "Total_Sum_of_PO_Converted_Qty": 31, "Total_Sum_of_PO_Line_Total_SAR": 33705.99, "Overall_Average_Price": 1087.29, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0.05166666675 },
-            { "Material_Number": 967564, "Material_Description": "FLUID: TYP NON-REACTIVE SYNTHETIC", "Unspsc_MaterialService_Group": "15121518", "Unspsc_Desc": "Damping fluids", "Sum_of_PO_Converted_Qty": 44, "Sum_of_PO_Line_Total_SAR": 71216.600, "col2018_Average_Price": 1618.559, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 7695.000, "col2019_Average_Price": 1923.750, "Sum_of_PO_Converted_Qty": 11.000, "Sum_of_PO_Line_Total_SAR": 21161.200, "col2020_Average_Price": 1923.745, "Total_Sum_of_PO_Converted_Qty": 59.000, "Total_Sum_of_PO_Line_Total_SAR": 100072.800, "Overall_Average_Price": 1696.149, "Cost_Savings_for_2019": -1220.764, "cost_saving_for_2020": 0.050 },
-            { "Material_Number": 7171324, "Material_Description": "BATTERYSTORAGE:AMP HOUR 200AH", "Unspsc_MaterialService_Group": "26111701", "Unspsc_Desc": "Rechargeable batter.", "Sum_of_PO_Converted_Qty": 24, "Sum_of_PO_Line_Total_SAR": 49800.000, "col2018_Average_Price": 2075.000, "Sum_of_PO_Converted_Qty": 4.000, "Sum_of_PO_Line_Total_SAR": 6961.480, "col2019_Average_Price": 1740.370, "Sum_of_PO_Converted_Qty": 22.000, "Sum_of_PO_Line_Total_SAR": 38288.100, "col2020_Average_Price": 1740.368, "Total_Sum_of_PO_Converted_Qty": 50.000, "Total_Sum_of_PO_Line_Total_SAR": 95049.580, "Overall_Average_Price": 1900.992, "Cost_Savings_for_2019": 1338.520, "cost_saving_for_2020": 0.040 },
-            { "Material_Number": 128623, "Material_Description": "FILTEROIL:OD 136.53 X LG 306.4MM", "Unspsc_MaterialService_Group": "40161504", "Unspsc_Desc": "Oil filters", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 161, "Sum_of_PO_Line_Total_SAR": 22237.34, "col2019_Average_Price": 138.120124223602, "Sum_of_PO_Converted_Qty": 80, "Sum_of_PO_Line_Total_SAR": 11049.6, "col2020_Average_Price": 138.12, "Total_Sum_of_PO_Converted_Qty": 241, "Total_Sum_of_PO_Line_Total_SAR": 33286.94, "Overall_Average_Price": 138.120082987552, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0.00993788816 },
-            { "Material_Number": 314121, "Material_Description": "ABSORBENT MATERIALOIL AND WATER:TYP OIL", "Unspsc_MaterialService_Group": "47131900", "Unspsc_Desc": "Absorbents", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 65348, "Sum_of_PO_Line_Total_SAR": 174479.2, "col2019_Average_Price": 2.67000061210749, "Sum_of_PO_Converted_Qty": 2000, "Sum_of_PO_Line_Total_SAR": 5340, "col2020_Average_Price": 2.67, "Total_Sum_of_PO_Converted_Qty": 67348, "Total_Sum_of_PO_Line_Total_SAR": 179819.2, "Overall_Average_Price": 2.67000059393004, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0.00122421498 },
-            { "Material_Number": 118360, "Material_Description": "VALVE:TYP TRANSFERVLV SZ 1/2 X 1/4IN.", "Unspsc_MaterialService_Group": "40141600", "Unspsc_Desc": "Valves (unspecified)", "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 49649.600, "col2018_Average_Price": 4513.600, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 13540.800, "col2019_Average_Price": 4513.600, "Sum_of_PO_Converted_Qty": 3.000, "Sum_of_PO_Line_Total_SAR": 13540.800, "col2020_Average_Price": 4513.600, "Total_Sum_of_PO_Converted_Qty": 17.000, "Total_Sum_of_PO_Line_Total_SAR": 76731.200, "Overall_Average_Price": 4513.600, "Cost_Savings_for_2019": 0, "cost_saving_for_2020": 0 },
-            { "Material_Number": 644158, "Material_Description": "SOLVENT:TYP DEGREASERDRUM 210L", "Unspsc_MaterialService_Group": "12190000", "Unspsc_Desc": "Solvents", "Sum_of_PO_Converted_Qty": 3991, "Sum_of_PO_Line_Total_SAR": 54118.000, "col2018_Average_Price": 13.560, "Sum_of_PO_Converted_Qty": 2731.000, "Sum_of_PO_Line_Total_SAR": 37032.360, "col2019_Average_Price": 13.560, "Sum_of_PO_Converted_Qty": 420.000, "Sum_of_PO_Line_Total_SAR": 5695.200, "col2020_Average_Price": 13.560, "Total_Sum_of_PO_Converted_Qty": 7142.000, "Total_Sum_of_PO_Line_Total_SAR": 96845.560, "Overall_Average_Price": 13.560, "Cost_Savings_for_2019": 0.027, "cost_saving_for_2020": 0 },
-            { "Material_Number": 295538, "Material_Description": "WIREELECTRICAL:SZ DIA 0.7MM", "Unspsc_MaterialService_Group": "26121500", "Unspsc_Desc": "Electrical wire", "Sum_of_PO_Converted_Qty": 107.7, "Sum_of_PO_Line_Total_SAR": 6462.000, "col2018_Average_Price": 60.000, "Sum_of_PO_Converted_Qty": 177.450, "Sum_of_PO_Line_Total_SAR": 10647.000, "col2019_Average_Price": 60.000, "Sum_of_PO_Converted_Qty": 51.550, "Sum_of_PO_Line_Total_SAR": 3093.000, "col2020_Average_Price": 60.000, "Total_Sum_of_PO_Converted_Qty": 336.700, "Total_Sum_of_PO_Line_Total_SAR": 20202.000, "Overall_Average_Price": 60.000, "Cost_Savings_for_2019": 0, "cost_saving_for_2020": 0 },
-            { "Material_Number": 329607, "Material_Description": "CONNECTORLUG:TYP BATTERY", "Unspsc_MaterialService_Group": "31163100", "Unspsc_Desc": "Connectors", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 39, "Sum_of_PO_Line_Total_SAR": 1856.4, "col2019_Average_Price": 47.6, "Sum_of_PO_Converted_Qty": 36, "Sum_of_PO_Line_Total_SAR": 1713.6, "col2020_Average_Price": 47.6, "Total_Sum_of_PO_Converted_Qty": 75, "Total_Sum_of_PO_Line_Total_SAR": 3570, "Overall_Average_Price": 47.6, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 730490, "Material_Description": "GSKT:1INFULL FACETHK 3MM", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 60, "Sum_of_PO_Line_Total_SAR": 2007, "col2019_Average_Price": 33.45, "Sum_of_PO_Converted_Qty": 19, "Sum_of_PO_Line_Total_SAR": 635.55, "col2020_Average_Price": 33.45, "Total_Sum_of_PO_Converted_Qty": 79, "Total_Sum_of_PO_Line_Total_SAR": 2642.55, "Overall_Average_Price": 33.45, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 24424, "Material_Description": "BRGBALL:INSIDE DIAMETER 25MMOUTSIDE DI", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 41, "Sum_of_PO_Line_Total_SAR": 375.56, "col2019_Average_Price": 9.16, "Sum_of_PO_Converted_Qty": 39, "Sum_of_PO_Line_Total_SAR": 357.24, "col2020_Average_Price": 9.16, "Total_Sum_of_PO_Converted_Qty": 80, "Total_Sum_of_PO_Line_Total_SAR": 732.8, "Overall_Average_Price": 9.16, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 770520, "Material_Description": "BRGSLEEVE:", "Unspsc_MaterialService_Group": "31171509", "Unspsc_Desc": "Sleeve bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 10, "Sum_of_PO_Line_Total_SAR": 2452.3, "col2019_Average_Price": 245.23, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 490.46, "col2020_Average_Price": 245.23, "Total_Sum_of_PO_Converted_Qty": 12, "Total_Sum_of_PO_Line_Total_SAR": 2942.76, "Overall_Average_Price": 245.23, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 162884, "Material_Description": "GSKTSPWD:10IN150LBGRAPHITE", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 6, "Sum_of_PO_Line_Total_SAR": 61.2, "col2019_Average_Price": 10.2, "Sum_of_PO_Converted_Qty": 31, "Sum_of_PO_Line_Total_SAR": 316.2, "col2020_Average_Price": 10.2, "Total_Sum_of_PO_Converted_Qty": 37, "Total_Sum_of_PO_Line_Total_SAR": 377.4, "Overall_Average_Price": 10.2, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 343318, "Material_Description": "BRG - BALL DEEP GROOVE -  55X 100X 21MM", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 130.36, "col2019_Average_Price": 65.18, "Sum_of_PO_Converted_Qty": 3, "Sum_of_PO_Line_Total_SAR": 195.54, "col2020_Average_Price": 65.18, "Total_Sum_of_PO_Converted_Qty": 5, "Total_Sum_of_PO_Line_Total_SAR": 325.9, "Overall_Average_Price": 65.18, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 195846, "Material_Description": "BRG-BAL:IBI 12053I DIA 30MMOUT DIA 72M", "Unspsc_MaterialService_Group": "31171504", "Unspsc_Desc": "Ball bearings", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 18.21, "col2019_Average_Price": 18.21, "Sum_of_PO_Converted_Qty": 9, "Sum_of_PO_Line_Total_SAR": 163.89, "col2020_Average_Price": 18.21, "Total_Sum_of_PO_Converted_Qty": 10, "Total_Sum_of_PO_Line_Total_SAR": 182.1, "Overall_Average_Price": 18.21, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 238618, "Material_Description": "GSKTSPWD:2IN300/600LBGRAPHITE316 SS", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 40, "Sum_of_PO_Line_Total_SAR": 166, "col2019_Average_Price": 4.15, "Sum_of_PO_Converted_Qty": 33, "Sum_of_PO_Line_Total_SAR": 136.95, "col2020_Average_Price": 4.15, "Total_Sum_of_PO_Converted_Qty": 73, "Total_Sum_of_PO_Line_Total_SAR": 302.95, "Overall_Average_Price": 4.15, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 164557, "Material_Description": "GSKT PRE-CUT :F/RINGSBR 2 150#RF 1/8", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 100, "Sum_of_PO_Line_Total_SAR": 160, "col2019_Average_Price": 1.6, "Sum_of_PO_Converted_Qty": 82, "Sum_of_PO_Line_Total_SAR": 131.2, "col2020_Average_Price": 1.6, "Total_Sum_of_PO_Converted_Qty": 182, "Total_Sum_of_PO_Line_Total_SAR": 291.2, "Overall_Average_Price": 1.6, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 297882, "Material_Description": "SEALOIL:ID 65MMOD 90MMWD 10MM", "Unspsc_MaterialService_Group": "31181600", "Unspsc_Desc": "Seals", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 11, "Sum_of_PO_Line_Total_SAR": 128.15, "col2019_Average_Price": 11.65, "Sum_of_PO_Converted_Qty": 9, "Sum_of_PO_Line_Total_SAR": 104.85, "col2020_Average_Price": 11.65, "Total_Sum_of_PO_Converted_Qty": 20, "Total_Sum_of_PO_Line_Total_SAR": 233, "Overall_Average_Price": 11.65, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 7060, "Material_Description": "ABRSVSHT:WD 9 X LG 11ING 400", "Unspsc_MaterialService_Group": "31191501", "Unspsc_Desc": "Abrasive papers", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 13, "Sum_of_PO_Line_Total_SAR": 6.24, "col2019_Average_Price": 0.48, "Sum_of_PO_Converted_Qty": 100, "Sum_of_PO_Line_Total_SAR": 48, "col2020_Average_Price": 0.48, "Total_Sum_of_PO_Converted_Qty": 113, "Total_Sum_of_PO_Line_Total_SAR": 54.24, "Overall_Average_Price": 0.48, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 239438, "Material_Description": "GSKTSPWD:3/4IN300/600LBGRAPHITE", "Unspsc_MaterialService_Group": "31181500", "Unspsc_Desc": "Gaskets", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 13, "Sum_of_PO_Line_Total_SAR": 28.6, "col2019_Average_Price": 2.2, "Sum_of_PO_Converted_Qty": 12, "Sum_of_PO_Line_Total_SAR": 26.4, "col2020_Average_Price": 2.2, "Total_Sum_of_PO_Converted_Qty": 25, "Total_Sum_of_PO_Line_Total_SAR": 55, "Overall_Average_Price": 2.2, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 },
-            { "Material_Number": 7087469, "Material_Description": "CHROMATOGRAPH:TYP HYDROCARBON DETECTION", "Unspsc_MaterialService_Group": "41115700", "Unspsc_Desc": "Chromato measur inst", "Sum_of_PO_Converted_Qty": null, "Sum_of_PO_Line_Total_SAR": null, "col2018_Average_Price": null, "Sum_of_PO_Converted_Qty": 1, "Sum_of_PO_Line_Total_SAR": 225000, "col2019_Average_Price": 225000, "Sum_of_PO_Converted_Qty": 2, "Sum_of_PO_Line_Total_SAR": 450000, "col2020_Average_Price": 225000, "Total_Sum_of_PO_Converted_Qty": 3, "Total_Sum_of_PO_Line_Total_SAR": 675000, "Overall_Average_Price": 225000, "Cost_Savings_for_2019": null, "cost_saving_for_2020": 0 }],
-            editx: -1,
-            data: ""
-        }
-        this.exportPDF = this.exportPDF.bind(this);
-        this.ExportCSV = this.ExportCSV.bind(this);
-    }
-    componentDidMount() {
-        axios.get("http://localhost:5000/api/commands/"
-        ).then(response => {
-            console.log(response.data)
-            this.setState({ data: response.data })
-        })
-            .catch((e) => console.log(e))
-    }
-    handleSearch = (e) => {
-        this.setState({
-            searchTerm: e.target.value
-        })
-    }
-
-    handleEdit = (i) => {
-        console.log("editing")
-        console.log(i);
-    }
-
-    handleDelete = (i) => {
-        console.log("i " + i);
-        // axios.delete(`http://localhost:5000/api/commands/${i}`)
-        //     .then((response) => console.log(response))
-        //     .catch((e) => console.log(e))
-        this.setState({
-            people: this.state.people.filter((data) =>
-                data.Material_Number !== i
-            )
-        })
-    }
-
-    startEditing = (i) => {
-        this.setState({ editx: i })
-    }
-
-    stopEditing = (i, data) => {
-        this.setState({ editx: -1 })
-        console.log("i " + i);
-        console.log("i data" + data);
-
-        axios.put(`http://localhost:5000/api/commands/${i}`, data)
-            .then((response) => {
-                console.log(response)
-            })
-            .catch((e) => console.log(e))
-    }
-
-    handleChange = (e, Name, i) => {
-
-        const { value } = e.target;
-        console.log("i=>" + i);
-        console.log("Name=>" + Name);
-
-        this.setState(state => ({
-            data: state.people.map((row, j) => {
-                // (row.Material_Number === i ? { ...row, [Name]: value } : row)
-                if (row.Material_Number === i) {
-                    console.log("got it")
-                    console.log("row" + row[Name])
-                    {
-                        row[Name] = value
-                    }
-                }
-                else {
-                    console.log("not")
-                }
-            }
-
-            )
-        }))
-    }
-    onChange = (e) => {
-        if (e.target.value === "PDF") {
-            this.exportPDF();
-        } else {
-            this.ExportCSV();
-        }
-    }
-
-    exportPDF = () => {
-        const unit = "pt";
-        const size = "A4"; // Use A1, A2, A3 or A4
-        const orientation = "portrait"; // portrait or landscape
-        const marginLeft = 40;
-        const doc = new jsPDF(orientation, unit, size);
-        doc.setFontSize(15);
-        const title = "My Awesome Report";
-        const headers = [["Material_Number", "col2018_Average_Price", "col2019_Average_Price", "col2020_Average_Price"]];
-        const data = this.state.people.map(elt => [elt.Material_Number, elt.col2018_Average_Price, elt.col2019_Average_Price, elt.col2020_Average_Price]);
-        let content = {
-            startY: 50,
-            head: headers,
-            body: data
-        };
-        doc.text(title, marginLeft, 40);
-        doc.autoTable(content);
-        doc.save("report.pdf")
-    }
-    ExportCSV = () => {
-        const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-        const fileExtension = '.xlsx';
-        const ws = XLSX.utils.json_to_sheet(this.state.people);
-        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, "Excel" + fileExtension);
-    }
-    onLogoutClick = e => {
-        e.preventDefault();
-        this.props.logoutUser();
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: "",
+      searchTerm: "",
+      loading: "",
+      postPerPage: 5,
+      currentPage: 1,
+      export: "",
+      people: people,
+      editx: -1,
+      data: "",
     };
-    render() {
-        return (
-            <section className="p-t-20">
-                <div className="container">
-                    <div class="row">
-                        <div className="col-lg-7">
-                            <div className="recent-report3 m-b-40">
-                                <div className="title-wrap">
-                                    <h3 className="title-3">Average Chart</h3>
-                                    <div className="chart-info-wrap">
-                                        {/* <div className="chart-note">
-                                            <span className="dot dot--blue"></span>
-                                            <span>Blue</span>
-                                        </div>
-                                        <div className="chart-note mr-0">
-                                            <span className="dot dot--green"></span>
-                                            <span>green</span>
-                                        </div> */}
-                                    </div>
-                                </div>
-                                <div className="filters m-b-55">
-                                    {/* <div className="rs-select2--dark rs-select2--md m-r-10 rs-select2--border">
-                                        <select className="js-select2" name="property">
-                                            <option selected="selected">Products Sales</option>
-                                            <option value="">Products</option>
-                                            <option value="">Services</option>
-                                        </select>
-                                        <div className="dropDownSelect2"></div>
-                                    </div>
-                                    <div className="rs-select2--dark rs-select2--sm rs-select2--border">
-                                        <select className="js-select2 au-select-dark" name="time">
-                                            <option selected="selected">All Time</option>
-                                            <option value="">By Month</option>
-                                            <option value="">By Day</option>
-                                        </select>
-                                        <div className="dropDownSelect2"></div>
-                                    </div> */}
-                                </div>
-                                <div className="chart-wrap">
-                                    <Chart data={this.state.people} showSecChart={true} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-5">
-                            <div className="chart-percent-3 m-b-40">
+    this.exportPDF = this.exportPDF.bind(this);
+    this.ExportCSV = this.ExportCSV.bind(this);
+  }
+  componentDidMount() {
+    axios
+      .get("http://localhost:5000/api/commands/")
+      .then((response) => {
+        console.log(response.data);
+        this.setState({ data: response.data });
+      })
+      .catch((e) => console.log(e));
+  }
+  handleSearch = (e) => {
+    this.setState({
+      searchTerm: e.target.value,
+    });
+  };
 
-                                <h3 className="title-3 m-b-25">Final chart</h3>
-                                <div className="chart-note m-b-5">
-                                    <span className="dot dot--blue"></span>
-                                    <span>2020</span>
-                                </div>
-                                <div className="chart-note">
-                                    <span className="dot dot--green"></span>
-                                    <span>2019</span>
-                                </div>
-                                <div className="chart-wrap m-t-60">
-                                    {/* <canvas id="percent-chart2"></canvas> */}
-                                    <Chart data={this.state.people} />
+  handleEdit = (i) => {
+    console.log("editing");
+    console.log(i);
+  };
 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <h3 className="title-5 m-b-35">data table</h3>
-                            <div className="table-data__tool">
-                                <div className="table-data__tool-left">
-                                    <div className="rs-select2--light rs-select2--md">
-                                        <div className="md-form mt-0">
-                                            <input onChange={this.handleSearch} className="form-control" type="text" placeholder="Search" aria-label="Search" />
-                                        </div>
-                                        <div className="dropDownSelect2"></div>
-                                    </div>
-                                    <div className="rs-select2--light rs-select2--sm">
-                                    </div>
-                                </div>
-                                <div className="table-data__tool-right">
-                                    <div className="rs-select2--dark rs-select2--sm rs-select2--dark2">
-                                        <select className="custom-select" onChange={this.onChange} name=" type">
-                                            <option selected="selected">Export</option>
-                                            <option value="PDF">PDF</option>
-                                            <option value="Word">Word</option>
-                                        </select>
-                                        <div className="dropDownSelect2"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="table-responsive table-responsive-data2">
-                                <table className="table table-data2">
-                                    <thead>
-                                        <tr>
-                                            <th>Material_Number</th>
-                                            <th>col2018_Average_Price</th>
-                                            <th>col2019_Average_Price</th>
-                                            <th>col2020_Average_Price</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            this.state.people ? this.state.people
-                                                .filter(
-                                                    data =>
-                                                        `${data.Material_Description} ${data.Material_Number}`
-                                                            .toUpperCase()
-                                                            .indexOf(this.state.searchTerm.toUpperCase()) >= 0)
-                                                .map((data, index) => {
-                                                    const currentlyEdit = (this.state.editx === index) ? true : false;
-                                                    return (
-                                                        <tr className="tr-shadow">
-                                                            <td>
-                                                                {currentlyEdit ?
-                                                                    <TextField onChange={e => this.handleChange(e, "Material_Number", data.Material_Number)} name="Material_Number" value={data.Material_Number} />
-                                                                    :
-                                                                    data.Material_Number
-                                                                }
-                                                            </td>
+  handleDelete = (i) => {
+    console.log("i " + i);
+    // axios.delete(`http://localhost:5000/api/commands/${i}`)
+    //     .then((response) => console.log(response))
+    //     .catch((e) => console.log(e))
+    this.setState({
+      people: this.state.people.filter((data) => data.Material_Number !== i),
+    });
+  };
 
-                                                            <td className="desc">
-                                                                {currentlyEdit ?
-                                                                    <TextField onChange={e => this.handleChange(e, "col2018_Average_Price", data.Material_Number)} name="col2018_Average_Price" value={data.col2018_Average_Price} />
-                                                                    :
-                                                                    data.col2018_Average_Price
-                                                                }
-                                                            </td>
-                                                            <td className="desc">
-                                                                <span class="status--process">
-                                                                    {currentlyEdit ?
-                                                                        <TextField onChange={e => this.handleChange(e, "col2019_Average_Price", data.Material_Number)} name="col2019_Average_Price" value={data.col2019_Average_Price} />
-                                                                        :
-                                                                        data.col2019_Average_Price
-                                                                    }
-                                                                </span>
-                                                            </td>
-                                                            <td className="desc">
-                                                                {currentlyEdit ?
-                                                                    <TextField onChange={e => this.handleChange(e, "col2020_Average_Price", data.Material_Number)} name="col2020_Average_Price" value={data.col2020_Average_Price} />
-                                                                    :
-                                                                    data.col2020_Average_Price
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                <div className="table-data-feature">
-                                                                    {currentlyEdit ?
-                                                                        <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                                            <CheckIcon onClick={() => this.stopEditing(data.Material_Number, data)} />
-                                                                        </button> :
-                                                                        <button className="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                                                            <EditIcon onClick={() => this.startEditing(index)} />
-                                                                        </button>}
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div className="table-data-feature">
-                                                                    <button className="item" onClick={() => this.handleDelete(data.Material_Number)} data-toggle="tooltip" data-placement="top" title="Send">
-                                                                        <DeleteIcon />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                })
-                                                : ""}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section >
-        )
+  startEditing = (i) => {
+    this.setState({ editx: i });
+  };
+
+  stopEditing = (i, data) => {
+    this.setState({ editx: -1 });
+    console.log("i " + i);
+    console.log("i data" + data);
+
+    axios
+      .put(`http://localhost:5000/api/commands/${i}`, data)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((e) => console.log(e));
+  };
+
+  handleChange = (e, Name, i) => {
+    const { value } = e.target;
+    console.log("i=>" + i);
+    console.log("Name=>" + Name);
+
+    this.setState((state) => ({
+      data: state.people.map((row, j) => {
+        // (row.Material_Number === i ? { ...row, [Name]: value } : row)
+        if (row.Material_Number === i) {
+          console.log("got it");
+          console.log("row" + row[Name]);
+          {
+            row[Name] = value;
+          }
+        } else {
+          console.log("not");
+        }
+      }),
+    }));
+  };
+  onChange = (e) => {
+    if (e.target.value === "PDF") {
+      this.exportPDF();
+    } else {
+      this.ExportCSV();
     }
+  };
+
+  exportPDF = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+    doc.setFontSize(15);
+    const title = "My Awesome Report";
+    const headers = [
+      [
+        "Material_Number",
+        "col2018_Average_Price",
+        "col2019_Average_Price",
+        "col2020_Average_Price",
+      ],
+    ];
+    const data = this.state.people.map((elt) => [
+      elt.Material_Number,
+      elt.col2018_Average_Price,
+      elt.col2019_Average_Price,
+      elt.col2020_Average_Price,
+    ]);
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("report.pdf");
+  };
+  ExportCSV = () => {
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const ws = XLSX.utils.json_to_sheet(this.state.people);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, "Excel" + fileExtension);
+  };
+  onLogoutClick = (e) => {
+    e.preventDefault();
+    this.props.logoutUser();
+  };
+  render() {
+    return (
+      <section className="p-t-20">
+        <div className="container">
+          {/* <div class="row">
+            <div className="col-lg-7">
+              <div className="recent-report3 m-b-40">
+                <div className="title-wrap">
+                  <h3 className="title-3">Average Chart</h3>
+                  <div className="chart-info-wrap">
+                    
+                  </div>
+                </div>
+                <div className="filters m-b-55">
+                  
+                </div>
+                <div className="chart-wrap">
+                  <Chart data={this.state.people} showSecChart={true} />
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-5">
+              <div className="chart-percent-3 m-b-40">
+                <h3 className="title-3 m-b-25">Final chart</h3>
+                <div className="chart-note m-b-5">
+                  <span className="dot dot--blue"></span>
+                  <span>2020</span>
+                </div>
+                <div className="chart-note">
+                  <span className="dot dot--green"></span>
+                  <span>2019</span>
+                </div>
+                <div className="chart-wrap m-t-60">
+                  <Chart data={this.state.people} />
+                </div>
+              </div>
+            </div>
+          </div> */}
+          <div className="row">
+            <div className="col-md-12">
+              <h3 className="title-5 m-b-35">data table</h3>
+              <div className="table-data__tool">
+                <div className="table-data__tool-left">
+                  <div className="rs-select2--light rs-select2--md">
+                    <div className="md-form mt-0">
+                      <input
+                        onChange={this.handleSearch}
+                        className="form-control"
+                        type="text"
+                        placeholder="Search"
+                        aria-label="Search"
+                      />
+                    </div>
+                    <div className="dropDownSelect2"></div>
+                  </div>
+                  <div className="rs-select2--light rs-select2--sm"></div>
+                </div>
+                <div className="table-data__tool-right">
+                  <div className="rs-select2--dark rs-select2--sm rs-select2--dark2">
+                    <select
+                      className="custom-select"
+                      onChange={this.onChange}
+                      name=" type"
+                    >
+                      <option selected="selected">Export</option>
+                      <option value="PDF">PDF</option>
+                      <option value="Word">Word</option>
+                    </select>
+                    <div className="dropDownSelect2"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="table-responsive table-responsive-data2">
+                <table className="table table-data2">
+                  <thead>
+                    <tr>
+                      <th>Material_Number</th>
+                      <th>col2018_Average_Price</th>
+                      <th>col2019_Average_Price</th>
+                      <th>col2020_Average_Price</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.people
+                      ? this.state.people
+                          .filter(
+                            (data) =>
+                              `${data.Material_Description} ${data.Material_Number}`
+                                .toUpperCase()
+                                .indexOf(this.state.searchTerm.toUpperCase()) >=
+                              0
+                          )
+                          .map((data, index) => {
+                            const currentlyEdit =
+                              this.state.editx === index ? true : false;
+                            return (
+                              <tr className="tr-shadow">
+                                <td>
+                                  {currentlyEdit ? (
+                                    <TextField
+                                      onChange={(e) =>
+                                        this.handleChange(
+                                          e,
+                                          "Material_Number",
+                                          data.Material_Number
+                                        )
+                                      }
+                                      name="Material_Number"
+                                      value={data.Material_Number}
+                                    />
+                                  ) : (
+                                    data.Material_Number
+                                  )}
+                                </td>
+
+                                <td className="desc">
+                                  {currentlyEdit ? (
+                                    <TextField
+                                      onChange={(e) =>
+                                        this.handleChange(
+                                          e,
+                                          "col2018_Average_Price",
+                                          data.Material_Number
+                                        )
+                                      }
+                                      name="col2018_Average_Price"
+                                      value={data.col2018_Average_Price}
+                                    />
+                                  ) : (
+                                    data.col2018_Average_Price
+                                  )}
+                                </td>
+                                <td className="desc">
+                                  <span class="status--process">
+                                    {currentlyEdit ? (
+                                      <TextField
+                                        onChange={(e) =>
+                                          this.handleChange(
+                                            e,
+                                            "col2019_Average_Price",
+                                            data.Material_Number
+                                          )
+                                        }
+                                        name="col2019_Average_Price"
+                                        value={data.col2019_Average_Price}
+                                      />
+                                    ) : (
+                                      data.col2019_Average_Price
+                                    )}
+                                  </span>
+                                </td>
+                                <td className="desc">
+                                  {currentlyEdit ? (
+                                    <TextField
+                                      onChange={(e) =>
+                                        this.handleChange(
+                                          e,
+                                          "col2020_Average_Price",
+                                          data.Material_Number
+                                        )
+                                      }
+                                      name="col2020_Average_Price"
+                                      value={data.col2020_Average_Price}
+                                    />
+                                  ) : (
+                                    data.col2020_Average_Price
+                                  )}
+                                </td>
+                                <td>
+                                  <div className="table-data-feature">
+                                    {currentlyEdit ? (
+                                      <button
+                                        className="item"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Send"
+                                      >
+                                        <CheckIcon
+                                          onClick={() =>
+                                            this.stopEditing(
+                                              data.Material_Number,
+                                              data
+                                            )
+                                          }
+                                        />
+                                      </button>
+                                    ) : (
+                                      <button
+                                        className="item"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Send"
+                                      >
+                                        <EditIcon
+                                          onClick={() =>
+                                            this.startEditing(index)
+                                          }
+                                        />
+                                      </button>
+                                    )}
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="table-data-feature">
+                                    <button
+                                      className="item"
+                                      onClick={() =>
+                                        this.handleDelete(data.Material_Number)
+                                      }
+                                      data-toggle="tooltip"
+                                      data-placement="top"
+                                      title="Send"
+                                    >
+                                      <DeleteIcon />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                      : ""}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 }
 
-const mapStateToProps = state => ({
-    auth: state.auth
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
-export default connect(
-    mapStateToProps,
-    { logoutUser }
-)(TableS);
+export default connect(mapStateToProps, { logoutUser })(TableS);

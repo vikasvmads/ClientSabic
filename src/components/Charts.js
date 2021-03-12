@@ -1,33 +1,21 @@
-import React from "react";
-import { connect } from "react-redux";
-import { logoutUser } from "../actions/authActions";
+import React, { Component } from "react";
+import Chart from "./Chart";
 import "../App.css";
-import TableS from "./table";
-import Statics from "./statics";
-import "bootstrap/dist/css/bootstrap.min.css";
+import BarChart from "./BarChart";
+import AnimationChart from "./AnimationChart";
 
-class index extends React.Component {
-  constructor() {
-    super();
-  }
-
-  onLogoutClick = (e) => {
-    e.preventDefault();
-    this.props.logoutUser();
-  };
-
+export default class Charts extends Component {
   render() {
     return (
-      // <body class="animsition">
       <div className="page-wrapper">
         <header className="header-desktop3 d-none d-lg-block">
           <div className="section__content section__content--p35">
             <div className="header3-wrap">
               <div className="header__logo">
-                <img
+                {/* <img
                   src={require("../images/SABIC-LOGO_tcm1010-14323.svg")}
                   alt="CoolAdmin"
-                />
+                /> */}
               </div>
               <div className="header__navbar">
                 <ul className="list-unstyled">
@@ -65,8 +53,8 @@ class index extends React.Component {
                   </li>
                   <li className="has-sub">
                     <a href="#">
-                      {/* <i className="fas fa-person"></i> */}
-                      <span className="bot-line"></span>Profile
+                      {/* <i className="fas fa-copy"></i> */}
+                      <span className="bot-line"></span> Profile
                     </a>
                     <ul className="header3-sub-list list-unstyled">
                       <li>
@@ -464,40 +452,46 @@ class index extends React.Component {
           </div>
         </div>
         <div className="page-content--bgf7">
-          <section className="au-breadcrumb2">
-            <div className="container">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="au-breadcrumb-content">
-                    <div className="au-breadcrumb-left">
-                      <span className="au-breadcrumb-span">You are here:</span>
-                      <ul className="list-unstyled list-inline au-breadcrumb__list">
-                        <li className="list-inline-item active">
-                          <a href="#">Home</a>
-                        </li>
-                        <li className="list-inline-item seprate">
-                          <span>/</span>
-                        </li>
-                        <li className="list-inline-item">Dashboard</li>
-                      </ul>
-                    </div>
-                    <form className="au-form-icon--sm" action="" method="post">
-                      <input
-                        className="au-input--w300 au-input--style2"
-                        type="text"
-                        placeholder="Search for datas &amp; reports..."
-                      />
-                      <button className="au-btn--submit2" type="submit">
-                        <i className="zmdi zmdi-search"></i>
-                      </button>
-                    </form>
-                  </div>
+          <div class="row mt-5">
+            <div className="col-lg-6">
+              <div className="recent-report3 m-b-40">
+                <div className="title-wrap">
+                  <h3 className="title-3">Average Chart</h3>
+                </div>
+
+                <div className="chart-wrap">
+                  <Chart showSecChart={true} />
                 </div>
               </div>
             </div>
-          </section>
-          <Statics />
-          <TableS />
+            <div className="col-6 ">
+              <div className="recent-report3 m-b-40">
+                <div className="title-wrap">
+                  <h3 className="title-3">MultiType Chart</h3>
+                </div>
+                <div className="chart-wrap">
+                  <BarChart />
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-6 offset-3">
+              <div className="chart-percent-3 m-b-40">
+                <h3 className="title-3 m-b-25">Final chart</h3>
+                <div className="chart-note m-b-5">
+                  <span className="dot dot--blue"></span>
+                  <span>2020</span>
+                </div>
+                <div className="chart-note">
+                  <span className="dot dot--green"></span>
+                  <span>2019</span>
+                </div>
+                <div className="chart-wrap m-t-60">
+                  {/* <Chart /> */}
+                  <AnimationChart />
+                </div>
+              </div>
+            </div>
+          </div>
           <section className="p-t-60 p-b-20">
             <div className="container">
               <div className="row">
@@ -512,8 +506,3 @@ class index extends React.Component {
     );
   }
 }
-
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-});
-export default connect(mapStateToProps, { logoutUser })(index);
