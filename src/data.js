@@ -46,13 +46,11 @@ class Data extends React.Component {
         const currentPosts = this.state.data.slice(indexofFirstPost, indexOfLastPost)
         return (
             < div className="limiter" >
-
                 <div className="container-table100">
                     <div className="wrap-table100">
                         <div class="col-xs-3">
                             <input className="formcontrol" onChange={this.handleSearch} type="text" placeholder="Search" aria-label="Search" />
                         </div>
-
                         <div className="panel-body table-responsive">
                             <div className="table100 ver1 m-b-110">
                                 <table data-vertable="ver1">
@@ -60,13 +58,10 @@ class Data extends React.Component {
                                         <tr className="row100 head">
                                             <th className="column100 column2" data-column="column2">userId</th>
                                             <th className="column100 column3" data-column="column3">id</th>
-
                                             <th className="column100 column2" data-column="column2">userId</th>
                                             <th className="column100 column3" data-column="column3">id</th>
-
                                             <th className="column100 column2" data-column="column2">userId</th>
                                             <th className="column100 column3" data-column="column3">id</th>
-
                                         </tr>
                                     </thead>
                                     {
@@ -101,8 +96,12 @@ class Data extends React.Component {
                                         )
                                             : ""
                                     }
-                                </table>{
-                                    this.state.searchTerm ? "" : <Paginations postPerPages={this.state.postPerPages} totalPosts={this.state.data.length} paginate={this.paginate} />}
+                                </table>
+                                {
+                                    this.state.searchTerm ? "" :
+                                    <Paginations postPerPages={this.state.postPerPages}
+                                            totalPosts={this.state.data.length}
+                                            paginate={this.paginate} />}
                             </div>
                         </div>
                     </div>

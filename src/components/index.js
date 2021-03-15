@@ -5,6 +5,8 @@ import "../App.css";
 import TableS from "./table";
 import Statics from "./statics";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Paginations from './Pagignation'
+
 
 class index extends React.Component {
   constructor() {
@@ -24,10 +26,10 @@ class index extends React.Component {
           <div className="section__content section__content--p35">
             <div className="header3-wrap">
               <div className="header__logo">
-                <img
+                {/* <img
                   src={require("../images/SABIC-LOGO_tcm1010-14323.svg")}
                   alt="CoolAdmin"
-                />
+                /> */}
               </div>
               <div className="header__navbar">
                 <ul className="list-unstyled">

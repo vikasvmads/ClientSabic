@@ -1,8 +1,80 @@
 import React, { Component } from "react";
 import Chart from "./Chart";
+import { Link } from 'react-router-dom';
 import "../App.css";
 import BarChart from "./BarChart";
 import AnimationChart from "./AnimationChart";
+import { Line, Doughnut } from "react-chartjs-2";
+import { Button} from 'react-bootstrap';
+
+const data = {
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  datasets: [
+    {
+      label: "First dataset",
+      data: [33, 53, 85, 41, 44, 65],
+      fill: true,
+      backgroundColor: "#80bfff",
+      borderColor: "#3399ff"
+    },
+    {
+      label: "Second dataset",
+      data: [33, 25, 35, 51, 54, 76],
+      fill: false,
+      borderColor: "#80ff80"
+    }
+  ]
+};
+
+const data1 = {
+  labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+  datasets: [
+    {
+      label: '# of Votes',
+      data: [12, 19, 5, 8,],
+      backgroundColor: [
+        '#ff3377',
+        '#66ccff',
+        '#80ff80',
+        '#4747d1',
+      ],
+      borderColor: [
+        '#ff3377',
+        '#66ccff',
+        '#80ff80',
+        '#4747d1',
+      ],
+      borderWidth: 1,
+    },
+  ],
+}
+
+const legend = {
+  display: true,
+  position: "bottom",
+  labels: {
+    fontColor: "#323130",
+    fontSize: 14
+  }
+};
+
+const options = {
+  title: {
+    display: true,
+    text: "Chart Title"
+  },
+  scales: {
+    yAxes: [
+      {
+        ticks: {
+          suggestedMin: 0,
+          suggestedMax: 100
+        }
+      }
+    ]
+  }
+};
+
 
 export default class Charts extends Component {
   render() {
@@ -452,6 +524,8 @@ export default class Charts extends Component {
           </div>
         </div>
         <div className="page-content--bgf7">
+
+
           <div class="row mt-5">
             <div className="col-lg-6">
               <div className="recent-report3 m-b-40">
@@ -460,7 +534,9 @@ export default class Charts extends Component {
                 </div>
 
                 <div className="chart-wrap">
-                  <Chart showSecChart={true} />
+                  {/* <Chart showSecChart={true} /> */}
+                  <AnimationChart />
+
                 </div>
               </div>
             </div>
@@ -474,7 +550,32 @@ export default class Charts extends Component {
                 </div>
               </div>
             </div>
-            <div className="col-lg-6 offset-3">
+             <div className="col-lg-6">
+              <div className="recent-report3 m-b-40">
+                <div className="title-wrap">
+                  <h3 className="title-3">Average Chart</h3>
+                </div>
+
+                <div className="chart-wrap">
+                  {/* <Chart showSecChart={true} /> */}
+                        <Line data={data} legend={legend} options={options} />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-6">
+              <div className="recent-report3 m-b-40">
+                <div className="title-wrap">
+                  <h3 className="title-3">Average Chart</h3>
+                </div>
+
+                <div className="chart-wrap">
+                  {/* <Chart showSecChart={true} /> */}
+                        <Doughnut data={data1} />
+                </div>
+              </div>
+            </div>
+            {/* <div className="col-lg-6">
               <div className="chart-percent-3 m-b-40">
                 <h3 className="title-3 m-b-25">Final chart</h3>
                 <div className="chart-note m-b-5">
@@ -486,12 +587,18 @@ export default class Charts extends Component {
                   <span>2019</span>
                 </div>
                 <div className="chart-wrap m-t-60">
-                  {/* <Chart /> */}
-                  <AnimationChart />
+                 
+                  <CanvasJSChart />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
+          <div className="btn-group" role="group" aria-label="Basic example">
+            
+            <Button  variant="success">Download Excel</Button>
+            <Button onClick={event =>  window.location.href='/Index'} variant="primary">Back</Button>
+          </div>
+          
           <section className="p-t-60 p-b-20">
             <div className="container">
               <div className="row">

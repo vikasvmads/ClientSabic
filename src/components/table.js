@@ -14,6 +14,8 @@ import TextField from "@material-ui/core/TextField";
 import CheckIcon from "@material-ui/icons/Check";
 import Chart from "./Chart";
 import { people } from "../peopleData";
+import Pagination from './Pagignation'
+
 
 class TableS extends React.Component {
   constructor(props) {
@@ -31,6 +33,8 @@ class TableS extends React.Component {
     };
     this.exportPDF = this.exportPDF.bind(this);
     this.ExportCSV = this.ExportCSV.bind(this);
+    this.paginate = this.paginate.bind(this);
+
   }
   componentDidMount() {
     axios
@@ -152,44 +156,17 @@ class TableS extends React.Component {
     e.preventDefault();
     this.props.logoutUser();
   };
+   paginate(pageNumber) {
+        this.setState({ currentPage: pageNumber })
+   }
+  
   render() {
+    const indexOfLastPost = this.state.currentPage * this.state.postPerPages;
+    const indexofFirstPost = indexOfLastPost - this.state.postPerPages;
+    const currentPosts = this.state.data.slice(indexofFirstPost, indexOfLastPost)
     return (
       <section className="p-t-20">
         <div className="container">
-          {/* <div class="row">
-            <div className="col-lg-7">
-              <div className="recent-report3 m-b-40">
-                <div className="title-wrap">
-                  <h3 className="title-3">Average Chart</h3>
-                  <div className="chart-info-wrap">
-                    
-                  </div>
-                </div>
-                <div className="filters m-b-55">
-                  
-                </div>
-                <div className="chart-wrap">
-                  <Chart data={this.state.people} showSecChart={true} />
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-5">
-              <div className="chart-percent-3 m-b-40">
-                <h3 className="title-3 m-b-25">Final chart</h3>
-                <div className="chart-note m-b-5">
-                  <span className="dot dot--blue"></span>
-                  <span>2020</span>
-                </div>
-                <div className="chart-note">
-                  <span className="dot dot--green"></span>
-                  <span>2019</span>
-                </div>
-                <div className="chart-wrap m-t-60">
-                  <Chart data={this.state.people} />
-                </div>
-              </div>
-            </div>
-          </div> */}
           <div className="row">
             <div className="col-md-12">
               <h3 className="title-5 m-b-35">data table</h3>
@@ -376,6 +353,10 @@ class TableS extends React.Component {
                       : ""}
                   </tbody>
                 </table>
+                
+                                    <Pagination postPerPages={this.state.postPerPages}
+                                            totalPosts={this.state.data.length}
+                                            paginate={this.paginate} />
               </div>
             </div>
           </div>
