@@ -14,7 +14,7 @@ import TextField from "@material-ui/core/TextField";
 import CheckIcon from "@material-ui/icons/Check";
 import Chart from "./Chart";
 import { people } from "../peopleData";
-import Pagination from './Pagignation'
+import Pages from "./pages";
 
 
 class TableS extends React.Component {
@@ -24,7 +24,8 @@ class TableS extends React.Component {
       data: "",
       searchTerm: "",
       loading: "",
-      postPerPage: 5,
+      postPerPage: 10,
+      postPerPages:10,
       currentPage: 1,
       export: "",
       people: people,
@@ -33,7 +34,7 @@ class TableS extends React.Component {
     };
     this.exportPDF = this.exportPDF.bind(this);
     this.ExportCSV = this.ExportCSV.bind(this);
-    this.paginate = this.paginate.bind(this);
+    //this.paginate = this.paginate.bind(this);
 
   }
   componentDidMount() {
@@ -156,14 +157,23 @@ class TableS extends React.Component {
     e.preventDefault();
     this.props.logoutUser();
   };
-   paginate(pageNumber) {
-        this.setState({ currentPage: pageNumber })
+
+  paginate = (pageNumber) => {
+        console.log("in paginate")
+        console.log("pageNumber===>",pageNumber)
+                this.setState({ currentPage: pageNumber })
+        console.log("currentPage===>",this.state.currentPage)
    }
   
   render() {
+    
     const indexOfLastPost = this.state.currentPage * this.state.postPerPages;
     const indexofFirstPost = indexOfLastPost - this.state.postPerPages;
-    const currentPosts = this.state.data.slice(indexofFirstPost, indexOfLastPost)
+    const currentPosts = this.state.people.slice(indexofFirstPost, indexOfLastPost)
+    console.log("Data indexOfLastPost==>", indexOfLastPost);
+    console.log("Data indexofFirstPost==>", indexofFirstPost);
+    console.log("Data currentPosts==>", currentPosts);
+
     return (
       <section className="p-t-20">
         <div className="container">
@@ -213,8 +223,8 @@ class TableS extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.people
-                      ? this.state.people
+                    {currentPosts
+                      ? currentPosts
                           .filter(
                             (data) =>
                               `${data.Material_Description} ${data.Material_Number}`
@@ -353,10 +363,10 @@ class TableS extends React.Component {
                       : ""}
                   </tbody>
                 </table>
-                
-                                    <Pagination postPerPages={this.state.postPerPages}
-                                            totalPosts={this.state.data.length}
-                                            paginate={this.paginate} />
+                                    <Pages postPerPages={this.state.postPerPages}
+                  totalPosts={this.state.people.length}
+                  paginate={this.paginate}
+                                             />
               </div>
             </div>
           </div>

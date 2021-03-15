@@ -571,7 +571,12 @@ export default class Charts extends Component {
 
                 <div className="chart-wrap">
                   {/* <Chart showSecChart={true} /> */}
-                        <Doughnut data={data1} />
+                        <Doughnut data={data1} 
+                        onElementsClick={(e) => {
+                        console.log(e, 'e')
+                         window.location.href='/Index'
+                        }}
+                  />
                 </div>
               </div>
             </div>

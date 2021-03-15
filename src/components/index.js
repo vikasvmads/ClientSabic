@@ -5,7 +5,7 @@ import "../App.css";
 import TableS from "./table";
 import Statics from "./statics";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Paginations from './Pagignation'
+//import Paginations from './Pagination'
 
 
 class index extends React.Component {
