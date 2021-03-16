@@ -57,6 +57,7 @@ class TableS extends React.Component {
     console.log(i);
   };
 
+   
   handleDelete = (i) => {
     console.log("i " + i);
     // axios.delete(`http://localhost:5000/api/commands/${i}`)

@@ -6,6 +6,8 @@ import BarChart from "./BarChart";
 import AnimationChart from "./AnimationChart";
 import { Line, Doughnut } from "react-chartjs-2";
 import { Button} from 'react-bootstrap';
+import jsPDF from "jspdf";
+import html2canvas from 'html2canvas';
 
 const data = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -77,6 +79,21 @@ const options = {
 
 
 export default class PieChart extends Component {
+  printDocument = () => {
+    console.log("Print is called")
+    const input = document.getElementById('PrintPDF');
+    console.log("input===>",input)
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        console.log("imgData===>",imgData)
+
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'JPEG', 0, 0);
+        pdf.save("download.pdf");
+      })
+    ;
+   }
   render() {
     return (
       <div className="page-wrapper">
@@ -561,7 +578,7 @@ export default class PieChart extends Component {
               </div>
             </div> */}
 
-            <div className="col-lg-10">
+            <div className="col-lg-10" id="PrintPDF">
               <div className="recent-report300 m-b-40">
                 <div className="title-wrap">
                   <h3 className="title-3">Average Chart</h3>
@@ -592,7 +609,7 @@ export default class PieChart extends Component {
           </div>
           <div className="btn-group" role="group" aria-label="Basic example">
             
-            <Button  variant="success">Download Excel</Button>
+            <Button onClick={this.printDocument} variant="success">Download Excel</Button>
             <Button onClick={event =>  window.location.href='/Index'} variant="primary">Back</Button>
           </div>
           

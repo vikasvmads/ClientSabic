@@ -7,6 +7,9 @@ import AnimationChart from "./AnimationChart";
 import { Line, Doughnut } from "react-chartjs-2";
 import { Button } from 'react-bootstrap';
 import CanvasJSReact from "../canvasjs.react";
+import jsPDF from "jspdf";
+import html2canvas from 'html2canvas';
+
 
 //var CanvasJSReact = require('./canvasjs.react');
 var CanvasJS = CanvasJSReact.CanvasJS;
@@ -84,6 +87,8 @@ function onClickCanvasJSChart(e) {
       window.location.href='/PieChart'
 		}
   
+
+
 const options1 = {
       animationEnabled: true,
       exportEnabled: false,
@@ -113,6 +118,22 @@ const options1 = {
 
 
 export default class Charts extends Component {
+  printDocument = () => {
+    console.log("Print is called")
+    const input = document.getElementById('PrintPDF');
+    console.log("input===>",input)
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        console.log("imgData===>",imgData)
+
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'JPEG', 0, 0);
+        pdf.save("download.pdf");
+      })
+    ;
+   }
+  
   render() {
     return (
       <div className="page-wrapper">
@@ -559,17 +580,17 @@ export default class Charts extends Component {
             </div>
           </div>
         </div>
-        <div className="page-content--bgf7">
+        <div className="page-content--bgf7" >
 
 
-          <div class="row mt-5">
+          <div class="row mt-5" id="PrintPDF">
             <div className="col-lg-6">
               <div className="recent-report3 m-b-40">
                 <div className="title-wrap">
                   <h3 className="title-3">Average Chart</h3>
                 </div>
 
-                <div className="chart-wrap">
+                <div className="chart-wrap" id="chart-wrap"> 
                   {/* <Chart showSecChart={true} /> */}
                   {/* <AnimationChart /> */}
                   <CanvasJSChart
@@ -628,7 +649,6 @@ export default class Charts extends Component {
                 <div className="chart-wrap">
                         <Doughnut data={data1} 
                         onElementsClick={(e) => {
-                        console.log(e, 'e')
                          window.location.href='/Doughnut'
                         }}
                   />
@@ -655,7 +675,7 @@ export default class Charts extends Component {
           </div>
           <div className="btn-group" role="group" aria-label="Basic example">
             
-            <Button  variant="success">Download Excel</Button>
+            <Button onClick={this.printDocument} variant="success">Download Excel</Button>
             <Button onClick={event =>  window.location.href='/Index'} variant="primary">Back</Button>
           </div>
           
