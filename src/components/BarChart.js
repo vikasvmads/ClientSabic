@@ -32,6 +32,9 @@ const data = {
   ],
 };
 
-const MultiType = () => <Bar data={data} />;
+const MultiType = () => <Bar data={data} onElementsClick={(e) => {
+                        console.log(e, 'e')
+                         window.location.href='/BarChart1'
+                        }}/>;
 
 export default MultiType;

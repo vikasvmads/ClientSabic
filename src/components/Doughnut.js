@@ -5,12 +5,7 @@ import "../App.css";
 import BarChart from "./BarChart";
 import AnimationChart from "./AnimationChart";
 import { Line, Doughnut } from "react-chartjs-2";
-import { Button } from 'react-bootstrap';
-import CanvasJSReact from "../canvasjs.react";
-
-//var CanvasJSReact = require('./canvasjs.react');
-var CanvasJS = CanvasJSReact.CanvasJS;
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+import { Button} from 'react-bootstrap';
 
 const data = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -80,39 +75,8 @@ const options = {
   }
 };
 
-function onClickCanvasJSChart(e) {
-      window.location.href='/PieChart'
-		}
-  
-const options1 = {
-      animationEnabled: true,
-      exportEnabled: false,
-      theme: "light1", // "light1", "dark1", "dark2"
-      title: {
-        text: "Trip Expenses",
-      },
-      data: [
-        {
-          
-          type: "pie",
-          click:onClickCanvasJSChart,
-          indexLabel: "{label}: {y}%",
-          startAngle: -90,
-          dataPoints: [
-            { y: 20, label: "Airfare" },
-            { y: 24, label: "Food & Drinks" },
-            { y: 20, label: "Accomodation" },
-            { y: 14, label: "Transportation" },
-            { y: 12, label: "Activities" },
-            { y: 10, label: "Misc" },
-          ],
-        },
-      ],
-    };
 
-
-
-export default class Charts extends Component {
+export default class Doughnutchart extends Component {
   render() {
     return (
       <div className="page-wrapper">
@@ -563,73 +527,52 @@ export default class Charts extends Component {
 
 
           <div class="row mt-5">
-            <div className="col-lg-6">
+            {/* <div className="col-lg-6">
               <div className="recent-report3 m-b-40">
                 <div className="title-wrap">
                   <h3 className="title-3">Average Chart</h3>
                 </div>
 
                 <div className="chart-wrap">
-                  {/* <Chart showSecChart={true} /> */}
-                  {/* <AnimationChart /> */}
-                  <CanvasJSChart
-          options={options1}
-          
-          /* onRef={ref => this.chart = ref} */
-        />
+                  <AnimationChart />
 
                 </div>
               </div>
-            </div>
-            <div className="col-6 ">
+            </div> */}
+            {/* <div className="col-6 ">
               <div className="recent-report3 m-b-40">
                 <div className="title-wrap">
                   <h3 className="title-3">MultiType Chart</h3>
                 </div>
                 <div className="chart-wrap">
-                  {/* <BarChart 
-                  onElementsClick={(e) => {
-                        console.log(e, 'e')
-                         window.location.href='/BarChart1'
-                        }}
-                  /> */}
-                  <BarChart data={data}
-                    
-                    legend={legend}
-                    options={options} />
+                  <BarChart />
                 </div>
               </div>
-            </div>
-             <div className="col-lg-6">
+            </div> */}
+             {/* <div className="col-lg-6">
               <div className="recent-report3 m-b-40">
+                <div className="title-wrap">
+                  <h3 className="title-3">Average Chart</h3>
+                </div>
+
+                <div className="chart-wrap">
+                        <Line data={data} legend={legend} options={options} />
+                </div>
+              </div>
+            </div> */}
+
+            <div className="col-lg-10">
+              <div className="recent-report300 m-b-40">
                 <div className="title-wrap">
                   <h3 className="title-3">Average Chart</h3>
                 </div>
 
                 <div className="chart-wrap">
                   {/* <Chart showSecChart={true} /> */}
-                  <Line data={data}
-                    onElementsClick={(e) => {
-                        console.log(e, 'e')
-                         window.location.href='/LineChart'
-                        }}
-                    legend={legend}
-                    options={options} />
-                </div>
-              </div>
-            </div>
-
-            <div className="col-lg-6">
-              <div className="recent-report3 m-b-40">
-                <div className="title-wrap">
-                  <h3 className="title-3">Average Chart</h3>
-                </div>
-
-                <div className="chart-wrap">
                         <Doughnut data={data1} 
                         onElementsClick={(e) => {
                         console.log(e, 'e')
-                         window.location.href='/Doughnut'
+                         window.location.href='/Index'
                         }}
                   />
                 </div>

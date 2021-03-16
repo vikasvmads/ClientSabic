@@ -177,6 +177,8 @@ strong {
     text-transform: capitalize;
     font-weight: 400;
     font-size: 24px;
+    margin-top: 15px;
+    margin-left: 15px;
     color: #333;
 }
 
@@ -370,6 +372,10 @@ button.btn.btn-success {
 
 .recent-report3.m-b-40 {
     height: 500px;
+}
+
+.recent-report300.m-b-40 {
+    height: 700px;
 }
 
 .login-checkbox label input[type="checkbox"] {

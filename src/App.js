@@ -24,6 +24,10 @@ import Login from "./components/login";
 import Hello from "./components/hello";
 import index from "./components/index";
 import Charts from "./components/Charts";
+import Doughnutchart from "./components/Doughnut";
+import LineChart from "./components/LineChart"
+import BarChart1 from "./components/BarChart1"
+import PieChart from "./components/PieChart"
 import store from "./stroe";
 
 var Tesseract = window.Tesseract;
@@ -46,6 +50,10 @@ function App() {
         <Route exact path="/login" component={Login} />
         <Route exact path="/Data" component={Data} />
         <Route exact path="/Index" component={index} />
+        <Route exact path="/Doughnut" component={Doughnutchart} />
+        <Route exact path="/LineChart" component={LineChart} />
+        <Route exact path="/BarChart1" component={BarChart1} />
+        <Route exact path="/PieChart" component={PieChart} />
         <Route exact path="/charts" component={Charts} />
         <Route exact path="/" component={Hello} />
       </Router>
